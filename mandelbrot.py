@@ -12,7 +12,7 @@ import time
 matplotlib.use('TkAgg')
 
 
-def f(c, max_iter=100):
+def mandelbrot_point(c, max_iter=100):
     """
     Calculates the number of iterations for a point c to escape the Mandelbrot set.
 
@@ -35,7 +35,7 @@ def f(c, max_iter=100):
     return max_iter
 
 
-def mandelbrot(threshold=2, max_iterations=100, image_size=256):
+def compute_mandelbrot(threshold=2, max_iterations=100, image_size=256):
     """
     Generates the Mandelbrot set.
 
@@ -61,7 +61,7 @@ def mandelbrot(threshold=2, max_iterations=100, image_size=256):
     mandelbrot_set = np.zeros(C.shape, dtype=int)
     for i in range(image_size):
         for j in range(image_size):
-            mandelbrot_set[i, j] = f(C[i, j], max_iterations)
+            mandelbrot_set[i, j] = mandelbrot_point(C[i, j], max_iterations)
 
     return mandelbrot_set
 
@@ -75,7 +75,7 @@ def mandelbrot_time_test():
     times = []
     for size in image_sizes:
         start_time = time.time()
-        mandelbrot(image_size=size)
+        compute_mandelbrot(image_size=size)
         end_time = time.time()
         times.append(end_time - start_time)
         print(f"Image size: {size}x{size}, Time taken: {end_time - start_time:.2f} seconds")
@@ -83,10 +83,10 @@ def mandelbrot_time_test():
     plt.show()
 
 
-def main():
+def main(image_size=4096):
     """Generates and displays the Mandelbrot set."""
     start_time = time.time()
-    mandelbrot_set = mandelbrot(image_size=8192)
+    mandelbrot_set = compute_mandelbrot(image_size)
     end_time = time.time()
     print(f"Mandelbrot set generated in {end_time - start_time:.2f} seconds.")
 
@@ -97,4 +97,15 @@ def main():
 
 
 if __name__ == "__main__":
+    # main(image_size=1024)
+
+    # 1024 -> Mandelbrot set generated in 0.19 seconds.
+    # 4096 -> Mandelbrot set generated in 36.59 seconds.
+
     mandelbrot_time_test()
+
+    # Image size: 256x256, Time taken: 0.18 seconds
+    # Image size: 512x512, Time taken: 0.60 seconds
+    # Image size: 1024x1024, Time taken: 2.27 seconds
+    # Image size: 2048x2048, Time taken: 9.13 seconds
+    # Image size: 4096x4096, Time taken: 36.76 seconds

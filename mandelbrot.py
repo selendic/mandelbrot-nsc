@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
+matplotlib.use('TkAgg')
+
 
 def f(c, max_iter=100):
     """
@@ -65,7 +67,11 @@ def mandelbrot(threshold=2, max_iterations=100, image_size=256):
 
 
 def mandelbrot_time_test():
-    image_sizes = [256*2**i for i in range(5)]  # 256, 512, 1024, 2048, 4096
+    """
+    Runs the Mandelbrot set generator for different image resolutions,
+    measures the time taken for each and plots the results.
+    """
+    image_sizes = [256 * 2 ** i for i in range(5)]  # 256, 512, 1024, 2048, 4096
     times = []
     for size in image_sizes:
         start_time = time.time()
@@ -76,13 +82,14 @@ def mandelbrot_time_test():
     plt.plot(image_sizes, times, marker='o')
     plt.show()
 
+
 def main():
+    """Generates and displays the Mandelbrot set."""
     start_time = time.time()
     mandelbrot_set = mandelbrot(image_size=8192)
     end_time = time.time()
     print(f"Mandelbrot set generated in {end_time - start_time:.2f} seconds.")
 
-    matplotlib.use('TkAgg')
     plt.imshow(mandelbrot_set, extent=(-2, 1, -1.5, 1.5), cmap='viridis')
     plt.colorbar()
     plt.title("Mandelbrot Set")

@@ -1,0 +1,32 @@
+Image size 256x256:
+Median: 0.1408 s(min = 0.1397, max = 0.1420)
+
+
+Image size 512x512:
+Median: 0.5653 s(min = 0.5563, max = 0.5703)
+
+
+Image size 1024x1024:
+Median: 2.2463 s(min = 2.2350, max = 2.3951)
+
+
+Image size 2048x2048:
+Median: 9.0761 s(min = 8.9591, max = 9.4526)
+
+
+Image size 4096x4096:
+Median: 35.7726 s(min = 35.1735, max = 36.0679)
+
+
+Image size 8192x8192:
+Median: 142.1990 s(min = 140.8486, max = 143.4574)
+
+__________________________________________________
+
+
+Image size 2048x2048:
+...
+    28    278.0 MiB     66.0 MiB           3           C = func_gen(image_size)
+    29    278.0 MiB      0.0 MiB           3           t0 = time.perf_counter()
+    30    278.0 MiB     32.0 MiB           3           result = func_calc(C, **kwargs)
+...

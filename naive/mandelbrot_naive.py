@@ -1,5 +1,5 @@
 """
-Mandelbrot Set Generator
+Mandelbrot Set Generator - naive approach
 Author : Marko Šelendić
 Course : Numerical Scientific Computing 2026
 """
@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 import time
+
+from util import mandelbrot_time_test
 
 matplotlib.use('TkAgg')
 
@@ -35,12 +37,14 @@ def mandelbrot_point(c, max_iter=100):
     return max_iter
 
 
-def compute_mandelbrot(threshold=2, max_iterations=100, image_size=256):
+def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100):
     """
-    Generates the Mandelbrot set.
+    Generates the Mandelbrot set (naively).
 
     Parameters
     ----------
+    set: np.ndarray
+        Array of complex numbers representing the points to evaluate
     threshold : float
         Escape threshold (default is 2)
     max_iterations : int
@@ -54,40 +58,41 @@ def compute_mandelbrot(threshold=2, max_iterations=100, image_size=256):
         2D array representing the Mandelbrot set
     """
 
-    X = np.linspace(-2, 1, image_size)
-    Y = np.linspace(-1.5, 1.5, image_size)
-    C = np.array([[complex(x, y) for x in X] for y in Y])
-
     mandelbrot_set = np.zeros(C.shape, dtype=int)
-    for i in range(image_size):
-        for j in range(image_size):
+    for i in range(C.shape[0]):
+        for j in range(C.shape[1]):
             mandelbrot_set[i, j] = mandelbrot_point(C[i, j], max_iterations)
 
     return mandelbrot_set
 
 
-def mandelbrot_time_test():
+def generate_complex_grid(image_size: int):
     """
-    Runs the Mandelbrot set generator for different image resolutions,
-    measures the time taken for each and plots the results.
+    Generate the complex grid for the Mandelbrot set.
+
+    Parameters
+    ----------
+    image_size
+        Size of the output image (default is 256)
+
+    Returns
+        The complex grid for the Mandelbrot set as a 2D array of complex numbers.
+    -------
+
     """
-    image_sizes = [256 * 2 ** i for i in range(5)]  # 256, 512, 1024, 2048, 4096
-    times = []
-    for size in image_sizes:
-        start_time = time.time()
-        compute_mandelbrot(image_size=size)
-        end_time = time.time()
-        times.append(end_time - start_time)
-        print(f"Image size: {size}x{size}, Time taken: {end_time - start_time:.2f} seconds")
-    plt.plot(image_sizes, times, marker='o')
-    plt.show()
+    X = np.linspace(-2, 1, image_size)
+    Y = np.linspace(-1.5, 1.5, image_size)
+    C = np.array([[complex(x, y) for x in X] for y in Y])
+
+    return C
 
 
 def main(image_size=4096):
     """Generates and displays the Mandelbrot set."""
-    start_time = time.time()
-    mandelbrot_set = compute_mandelbrot(image_size)
-    end_time = time.time()
+    C = generate_complex_grid(image_size)
+    start_time = time.perf_counter()
+    mandelbrot_set = compute_mandelbrot(C)
+    end_time = time.perf_counter()
     print(f"Mandelbrot set generated in {end_time - start_time:.2f} seconds.")
 
     plt.imshow(mandelbrot_set, extent=(-2, 1, -1.5, 1.5), cmap='viridis')
@@ -99,13 +104,17 @@ def main(image_size=4096):
 if __name__ == "__main__":
     # main(image_size=1024)
 
-    # 1024 -> Mandelbrot set generated in 0.19 seconds.
-    # 4096 -> Mandelbrot set generated in 36.59 seconds.
+    times, image_sizes = mandelbrot_time_test(
+        func_gen=generate_complex_grid,
+        func_calc=compute_mandelbrot,
+        top_size_log_2=4,
+        n_runs_per_size=3
+    )
 
-    mandelbrot_time_test()
-
-    # Image size: 256x256, Time taken: 0.18 seconds
+    # Image size: 256x256, Time taken: 0.15 seconds
     # Image size: 512x512, Time taken: 0.60 seconds
-    # Image size: 1024x1024, Time taken: 2.27 seconds
-    # Image size: 2048x2048, Time taken: 9.13 seconds
-    # Image size: 4096x4096, Time taken: 36.76 seconds
+    # Image size: 1024x1024, Time taken: 2.5 seconds
+    # Image size: 2048x2048, Time taken: 9.5 seconds
+    # Image size: 4096x4096, Time taken: 37 seconds
+    # Image size: 8192x8192, Time taken: 150 seconds
+    # (x4 per step?)

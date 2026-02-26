@@ -3,6 +3,7 @@ Mandelbrot Set Generator - numpy approach
 Author : Marko Šelendić
 Course : Numerical Scientific Computing 2026
 """
+import cProfile, pstats
 import time
 
 import matplotlib
@@ -15,7 +16,7 @@ from util import mandelbrot_time_test
 
 matplotlib.use('TkAgg')
 
-def compute_mandelbrot(C: np.ndarray, threshold: int = 2, max_iter=100):
+def compute_mandelbrot(C: np.ndarray, threshold: int = 2, max_iter=100) -> np.ndarray:
     """
     Calculates the number of iterations for each point in the array to escape the Mandelbrot set.
 
@@ -48,18 +49,18 @@ def compute_mandelbrot(C: np.ndarray, threshold: int = 2, max_iter=100):
     return output
 
 
-def generate_complex_grid(image_size: int):
+def generate_complex_grid(image_size: int) -> np.ndarray:
     """
     Generate the complex grid for the Mandelbrot set.
 
     Parameters
     ----------
-    image_size
+    image_size : int
         Size of the output image (default is 256)
 
     Returns
-        The complex grid for the Mandelbrot set as a 2D array of complex numbers.
     -------
+        The complex grid for the Mandelbrot set as a 2D array of complex numbers.
 
     """
     xs = np.linspace(-2, 1, image_size)

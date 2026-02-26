@@ -1,0 +1,43 @@
+Profile for naive_profile.prof:
+
+Thu Feb 26 13:56:42 2026    naive_profile.prof
+
+         23152492 function calls (23151332 primitive calls) in 14.048 seconds
+
+   Ordered by: cumulative time
+   List reduced from 191 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   14.287   14.287 {built-in method builtins.exec}
+        1    0.000    0.000   14.287   14.287 <string>:1(<module>)
+        1    0.000    0.000   14.287   14.287 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py:38(mandelbrot_time_test)
+        1    0.000    0.000   14.287   14.287 /home/peppermint/miniforge3/envs/nsc-2026/lib/python3.11/site-packages/memory_profiler.py:1185(wrapper)
+        1    0.000    0.000   14.232   14.232 /home/peppermint/miniforge3/envs/nsc-2026/lib/python3.11/site-packages/memory_profiler.py:759(f)
+        1    0.001    0.001   14.231   14.231 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py:7(benchmark)
+        1    0.725    0.725   13.951   13.951 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/naive/mandelbrot_naive.py:40(compute_mandelbrot)
+  1048576   12.231    0.000   13.225    0.000 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/naive/mandelbrot_naive.py:17(mandelbrot_point)
+ 21959734    0.994    0.000    0.994    0.000 {built-in method builtins.abs}
+        1    0.009    0.009    0.279    0.279 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/naive/mandelbrot_naive.py:69(generate_complex_grid)
+
+
+
+Profile for numpy_profile.prof:
+
+Thu Feb 26 13:56:43 2026    numpy_profile.prof
+
+         1168 function calls in 0.489 seconds
+
+   Ordered by: cumulative time
+   List reduced from 127 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.489    0.489 {built-in method builtins.exec}
+        1    0.001    0.001    0.489    0.489 <string>:1(<module>)
+        1    0.000    0.000    0.488    0.488 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py:38(mandelbrot_time_test)
+        1    0.000    0.000    0.488    0.488 /home/peppermint/miniforge3/envs/nsc-2026/lib/python3.11/site-packages/memory_profiler.py:1185(wrapper)
+        1    0.000    0.000    0.488    0.488 /home/peppermint/miniforge3/envs/nsc-2026/lib/python3.11/site-packages/memory_profiler.py:759(f)
+        1    0.001    0.001    0.488    0.488 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py:7(benchmark)
+        1    0.473    0.473    0.476    0.476 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/numpy_simd/mandelbrot_numpy.py:19(compute_mandelbrot)
+        1    0.008    0.008    0.011    0.011 /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/numpy_simd/mandelbrot_numpy.py:52(generate_complex_grid)
+        1    0.000    0.000    0.003    0.003 /home/peppermint/miniforge3/envs/nsc-2026/lib/python3.11/site-packages/numpy/lib/_function_base_impl.py:5134(meshgrid)
+        3    0.000    0.000    0.003    0.001 /home/peppermint/miniforge3/envs/nsc-2026/lib/python3.11/site-packages/numpy/lib/_function_base_impl.py:5280(<genexpr>)

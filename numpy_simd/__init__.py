@@ -1,0 +1,2 @@
+# numpy simd mandelbrot implementation
+

@@ -9,11 +9,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
+from line_profiler import profile
+
 from util import mandelbrot_time_test
 
 matplotlib.use('TkAgg')
 
 
+@profile
 def mandelbrot_point(c, max_iter=100):
     """
     Calculates the number of iterations for a point c to escape the Mandelbrot set.
@@ -37,6 +40,7 @@ def mandelbrot_point(c, max_iter=100):
     return max_iter
 
 
+@profile
 def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100):
     """
     Generates the Mandelbrot set (naively).
@@ -66,6 +70,7 @@ def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100):
     return mandelbrot_set
 
 
+@profile
 def generate_complex_grid(image_size: int):
     """
     Generate the complex grid for the Mandelbrot set.

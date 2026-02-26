@@ -1,0 +1,128 @@
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     7     73.2 MiB     73.2 MiB           1   @profile
+     8                                         def benchmark(func_gen, func_calc, image_size: int, n_runs=3, **kwargs):
+     9                                             """
+    10                                             Time func, return median of n_runs.
+    11
+    12                                             Parameters
+    13                                             ----------
+    14                                             func_gen : function
+    15                                                 Function to generate the complex grid for Mandelbrot set
+    16                                             func_calc : function
+    17                                                 Function to perform the computation of the Mandelbrot set
+    18                                             image_size : int
+    19                                                 Resolution of the Mandelbrot set
+    20                                             n_runs : int
+    21                                                 Number of runs to perform for timing (default is 3)
+    22                                             kwargs : dict
+    23                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    24                                             """
+    25     73.2 MiB      0.0 MiB           1       times = []
+    26     73.2 MiB      0.0 MiB           1       result = None
+    27    100.4 MiB      0.0 MiB           2       for _ in range(n_runs):
+    28     92.4 MiB     19.2 MiB           1           C = func_gen(image_size)
+    29     92.4 MiB      0.0 MiB           1           t0 = time.perf_counter()
+    30    100.4 MiB      8.0 MiB           1           result = func_calc(C, **kwargs)
+    31    100.4 MiB      0.0 MiB           1           times.append(time.perf_counter() - t0)
+    32    100.4 MiB      0.0 MiB           1       median_t = statistics.median(times)
+    33    100.4 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s"
+    34    100.4 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    35    100.4 MiB      0.0 MiB           1       return median_t, result
+
+
+Wrote profile results to 'main.py.lprof'
+Timer unit: 1e-06 s
+
+Total time: 7.0359 s
+File: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/naive/mandelbrot_naive.py
+Function: mandelbrot_point at line 19
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    19                                           @profile
+    20                                           def mandelbrot_point(c, max_iter=100):
+    21                                               """
+    22                                               Calculates the number of iterations for a point c to escape the Mandelbrot set.
+    23
+    24                                               Parameters
+    25                                               ----------
+    26                                               c : complex
+    27                                                   Complex point to evaluate
+    28
+    29                                               Returns
+    30                                               -------
+    31                                               int
+    32                                                   Number of iterations before escape, or max_iterations if it does not escape
+    33                                               """
+    34   1048576      68708.0      0.1      1.0      z_0 = 0 + 0j
+    35   1048576      75575.2      0.1      1.1      z_n = z_0
+    36  22139480    1354330.2      0.1     19.2      for n in range(max_iter):
+    37  21959734    2970489.5      0.1     42.2          z_n = z_n ** 2 + c
+    38  21959734    2488060.9      0.1     35.4          if abs(z_n) > 2:
+    39    868830      66194.7      0.1      0.9              return n
+    40    179746      12543.0      0.1      0.2      return max_iter
+
+Total time: 10.8177 s
+File: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/naive/mandelbrot_naive.py
+Function: compute_mandelbrot at line 43
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    43                                           @profile
+    44                                           def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100):
+    45                                               """
+    46                                               Generates the Mandelbrot set (naively).
+    47
+    48                                               Parameters
+    49                                               ----------
+    50                                               set: np.ndarray
+    51                                                   Array of complex numbers representing the points to evaluate
+    52                                               threshold : float
+    53                                                   Escape threshold (default is 2)
+    54                                               max_iterations : int
+    55                                                   Maximum number of iterations (default is 100)
+    56                                               image_size : int
+    57                                                   Size of the output image (default is 256)
+    58
+    59                                               Returns
+    60                                               -------
+    61                                               np.ndarray
+    62                                                   2D array representing the Mandelbrot set
+    63                                               """
+    64
+    65         1         48.3     48.3      0.0      mandelbrot_set = np.zeros(C.shape, dtype=int)
+    66      1025         75.9      0.1      0.0      for i in range(C.shape[0]):
+    67   1049600      70070.7      0.1      0.6          for j in range(C.shape[1]):
+    68   1048576   10747554.0     10.2     99.4              mandelbrot_set[i, j] = mandelbrot_point(C[i, j], max_iterations)
+    69
+    70         1          0.1      0.1      0.0      return mandelbrot_set
+
+Total time: 0.198397 s
+File: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/naive/mandelbrot_naive.py
+Function: generate_complex_grid at line 73
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    73                                           @profile
+    74                                           def generate_complex_grid(image_size: int):
+    75                                               """
+    76                                               Generate the complex grid for the Mandelbrot set.
+    77
+    78                                               Parameters
+    79                                               ----------
+    80                                               image_size
+    81                                                   Size of the output image (default is 256)
+    82
+    83                                               Returns
+    84                                                   The complex grid for the Mandelbrot set as a 2D array of complex numbers.
+    85                                               -------
+    86
+    87                                               """
+    88         1         98.1     98.1      0.0      X = np.linspace(-2, 1, image_size)
+    89         1         19.4     19.4      0.0      Y = np.linspace(-1.5, 1.5, image_size)
+    90         1     198279.2 198279.2     99.9      C = np.array([[complex(x, y) for x in X] for y in Y])
+    91
+    92         1          0.2      0.2      0.0      return C

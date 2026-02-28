@@ -1,0 +1,537 @@
+Testing 1024x1024 res full numba
+
+------------------------------------------------------------
+dtype_c=complex64 and dtype_out=int32:
+
+Image size 1024x1024:
+Median: 0.0414 s, Mean: 0.0418 s, StdDev: 0.0009 s (min = 0.0410, max = 0.0437)
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     8    189.5 MiB    189.5 MiB           1   @profile
+     9                                         def benchmark(func_gen, func_calc, image_size: int,
+    10                                                       n_runs: int = 3, warmup_runs: int = 0,
+    11                                                       dtype_c: type = None, dtype_out: type = None,
+    12                                                       **kwargs):
+    13                                             """
+    14                                             Time func, return median, mean, and stddev of n_runs.
+    15
+    16                                             Parameters
+    17                                             ----------
+    18                                             func_gen : function
+    19                                                 Function to generate the complex grid for Mandelbrot set
+    20                                             func_calc : function
+    21                                                 Function to perform the computation of the Mandelbrot set
+    22                                             image_size : int
+    23                                                 Resolution of the Mandelbrot set
+    24                                             n_runs : int
+    25                                                 Number of runs to perform for timing (default is 3)
+    26                                             warmup_runs : int
+    27                                                 Number of warmup runs before timing (default is 0)
+    28                                             dtype_c : type
+    29                                                 Data type for the complex grid (e.g. np.complex128)
+    30                                             dtype_out : type
+    31                                                 Data type for the output (e.g. np.int32)
+    32                                             kwargs : dict
+    33                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    34
+    35                                             Returns
+    36                                             -------
+    37                                             tuple
+    38                                                 (median_time, mean_time, stddev_time, result) where result is the output of func_calc
+    39                                             """
+    40
+    41                                             # Prepare kwargs for each function
+    42    189.5 MiB      0.0 MiB           1       gen_kwargs = {'dtype': dtype_c} if dtype_c is not None else {}
+    43    189.5 MiB      0.0 MiB           1       calc_kwargs = {**kwargs}
+    44    189.5 MiB      0.0 MiB           1       if dtype_out is not None:
+    45    189.5 MiB      0.0 MiB           1           calc_kwargs['dtype'] = dtype_out
+    46
+    47    189.5 MiB      0.0 MiB           1       times = []
+    48    189.5 MiB      0.0 MiB           1       result = None
+    49    256.3 MiB      0.0 MiB           2       for _ in range(warmup_runs):
+    50    197.9 MiB      8.4 MiB           1           C = func_gen(image_size, **gen_kwargs)
+    51    256.3 MiB     58.4 MiB           1           func_calc(C, **calc_kwargs)
+    52    276.3 MiB      0.0 MiB          11       for _ in range(n_runs):
+    53    276.3 MiB     16.1 MiB          10           C = func_gen(image_size, **gen_kwargs)
+    54    276.3 MiB      0.0 MiB          10           t0 = time.perf_counter()
+    55    276.3 MiB      3.9 MiB          10           result = func_calc(C, **calc_kwargs)
+    56    276.3 MiB      0.0 MiB          10           times.append(time.perf_counter() - t0)
+    57    276.3 MiB      0.0 MiB           1       median_t = statistics.median(times)
+    58    276.3 MiB      0.0 MiB           1       mean_t = statistics.mean(times)
+    59    276.3 MiB      0.0 MiB           1       stddev_t = statistics.stdev(times) if len(times) > 1 else 0.0
+    60    276.3 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s, Mean: {mean_t:.4f} s, StdDev: {stddev_t:.4f} s "
+    61    276.3 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    62    276.3 MiB      0.0 MiB           1       return median_t, mean_t, stddev_t, result
+
+
+
+------------------------------------------------------------
+dtype_c=complex64 and dtype_out=int64:
+
+Image size 1024x1024:
+Median: 0.0418 s, Mean: 0.0419 s, StdDev: 0.0011 s (min = 0.0408, max = 0.0448)
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     8    252.4 MiB    252.4 MiB           1   @profile
+     9                                         def benchmark(func_gen, func_calc, image_size: int,
+    10                                                       n_runs: int = 3, warmup_runs: int = 0,
+    11                                                       dtype_c: type = None, dtype_out: type = None,
+    12                                                       **kwargs):
+    13                                             """
+    14                                             Time func, return median, mean, and stddev of n_runs.
+    15
+    16                                             Parameters
+    17                                             ----------
+    18                                             func_gen : function
+    19                                                 Function to generate the complex grid for Mandelbrot set
+    20                                             func_calc : function
+    21                                                 Function to perform the computation of the Mandelbrot set
+    22                                             image_size : int
+    23                                                 Resolution of the Mandelbrot set
+    24                                             n_runs : int
+    25                                                 Number of runs to perform for timing (default is 3)
+    26                                             warmup_runs : int
+    27                                                 Number of warmup runs before timing (default is 0)
+    28                                             dtype_c : type
+    29                                                 Data type for the complex grid (e.g. np.complex128)
+    30                                             dtype_out : type
+    31                                                 Data type for the output (e.g. np.int32)
+    32                                             kwargs : dict
+    33                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    34
+    35                                             Returns
+    36                                             -------
+    37                                             tuple
+    38                                                 (median_time, mean_time, stddev_time, result) where result is the output of func_calc
+    39                                             """
+    40
+    41                                             # Prepare kwargs for each function
+    42    252.4 MiB      0.0 MiB           1       gen_kwargs = {'dtype': dtype_c} if dtype_c is not None else {}
+    43    252.4 MiB      0.0 MiB           1       calc_kwargs = {**kwargs}
+    44    252.4 MiB      0.0 MiB           1       if dtype_out is not None:
+    45    252.4 MiB      0.0 MiB           1           calc_kwargs['dtype'] = dtype_out
+    46
+    47    252.4 MiB      0.0 MiB           1       times = []
+    48    252.4 MiB      0.0 MiB           1       result = None
+    49    269.6 MiB      0.0 MiB           2       for _ in range(warmup_runs):
+    50    260.3 MiB      7.9 MiB           1           C = func_gen(image_size, **gen_kwargs)
+    51    269.6 MiB      9.4 MiB           1           func_calc(C, **calc_kwargs)
+    52    288.1 MiB    -40.0 MiB          11       for _ in range(n_runs):
+    53    288.1 MiB    -29.4 MiB          10           C = func_gen(image_size, **gen_kwargs)
+    54    288.1 MiB    -47.9 MiB          10           t0 = time.perf_counter()
+    55    288.1 MiB    -40.0 MiB          10           result = func_calc(C, **calc_kwargs)
+    56    288.1 MiB    -40.0 MiB          10           times.append(time.perf_counter() - t0)
+    57    280.1 MiB     -8.0 MiB           1       median_t = statistics.median(times)
+    58    280.1 MiB      0.0 MiB           1       mean_t = statistics.mean(times)
+    59    280.1 MiB      0.0 MiB           1       stddev_t = statistics.stdev(times) if len(times) > 1 else 0.0
+    60    280.1 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s, Mean: {mean_t:.4f} s, StdDev: {stddev_t:.4f} s "
+    61    280.1 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    62    280.1 MiB      0.0 MiB           1       return median_t, mean_t, stddev_t, result
+
+
+
+------------------------------------------------------------
+dtype_c=complex128 and dtype_out=int32:
+
+Image size 1024x1024:
+Median: 0.0407 s, Mean: 0.0408 s, StdDev: 0.0004 s (min = 0.0406, max = 0.0420)
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     8    248.2 MiB    248.2 MiB           1   @profile
+     9                                         def benchmark(func_gen, func_calc, image_size: int,
+    10                                                       n_runs: int = 3, warmup_runs: int = 0,
+    11                                                       dtype_c: type = None, dtype_out: type = None,
+    12                                                       **kwargs):
+    13                                             """
+    14                                             Time func, return median, mean, and stddev of n_runs.
+    15
+    16                                             Parameters
+    17                                             ----------
+    18                                             func_gen : function
+    19                                                 Function to generate the complex grid for Mandelbrot set
+    20                                             func_calc : function
+    21                                                 Function to perform the computation of the Mandelbrot set
+    22                                             image_size : int
+    23                                                 Resolution of the Mandelbrot set
+    24                                             n_runs : int
+    25                                                 Number of runs to perform for timing (default is 3)
+    26                                             warmup_runs : int
+    27                                                 Number of warmup runs before timing (default is 0)
+    28                                             dtype_c : type
+    29                                                 Data type for the complex grid (e.g. np.complex128)
+    30                                             dtype_out : type
+    31                                                 Data type for the output (e.g. np.int32)
+    32                                             kwargs : dict
+    33                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    34
+    35                                             Returns
+    36                                             -------
+    37                                             tuple
+    38                                                 (median_time, mean_time, stddev_time, result) where result is the output of func_calc
+    39                                             """
+    40
+    41                                             # Prepare kwargs for each function
+    42    248.2 MiB      0.0 MiB           1       gen_kwargs = {'dtype': dtype_c} if dtype_c is not None else {}
+    43    248.2 MiB      0.0 MiB           1       calc_kwargs = {**kwargs}
+    44    248.2 MiB      0.0 MiB           1       if dtype_out is not None:
+    45    248.2 MiB      0.0 MiB           1           calc_kwargs['dtype'] = dtype_out
+    46
+    47    248.2 MiB      0.0 MiB           1       times = []
+    48    248.2 MiB      0.0 MiB           1       result = None
+    49    268.7 MiB      0.0 MiB           2       for _ in range(warmup_runs):
+    50    264.2 MiB     16.0 MiB           1           C = func_gen(image_size, **gen_kwargs)
+    51    268.7 MiB      4.5 MiB           1           func_calc(C, **calc_kwargs)
+    52    308.7 MiB      0.0 MiB          11       for _ in range(n_runs):
+    53    308.7 MiB     36.1 MiB          10           C = func_gen(image_size, **gen_kwargs)
+    54    308.7 MiB      0.0 MiB          10           t0 = time.perf_counter()
+    55    308.7 MiB      3.9 MiB          10           result = func_calc(C, **calc_kwargs)
+    56    308.7 MiB      0.0 MiB          10           times.append(time.perf_counter() - t0)
+    57    308.7 MiB      0.0 MiB           1       median_t = statistics.median(times)
+    58    308.7 MiB      0.0 MiB           1       mean_t = statistics.mean(times)
+    59    308.7 MiB      0.0 MiB           1       stddev_t = statistics.stdev(times) if len(times) > 1 else 0.0
+    60    308.7 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s, Mean: {mean_t:.4f} s, StdDev: {stddev_t:.4f} s "
+    61    308.7 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    62    308.7 MiB      0.0 MiB           1       return median_t, mean_t, stddev_t, result
+
+
+
+------------------------------------------------------------
+dtype_c=complex128 and dtype_out=int64:
+
+Image size 1024x1024:
+Median: 0.0408 s, Mean: 0.0408 s, StdDev: 0.0001 s (min = 0.0406, max = 0.0410)
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     8    256.9 MiB    256.9 MiB           1   @profile
+     9                                         def benchmark(func_gen, func_calc, image_size: int,
+    10                                                       n_runs: int = 3, warmup_runs: int = 0,
+    11                                                       dtype_c: type = None, dtype_out: type = None,
+    12                                                       **kwargs):
+    13                                             """
+    14                                             Time func, return median, mean, and stddev of n_runs.
+    15
+    16                                             Parameters
+    17                                             ----------
+    18                                             func_gen : function
+    19                                                 Function to generate the complex grid for Mandelbrot set
+    20                                             func_calc : function
+    21                                                 Function to perform the computation of the Mandelbrot set
+    22                                             image_size : int
+    23                                                 Resolution of the Mandelbrot set
+    24                                             n_runs : int
+    25                                                 Number of runs to perform for timing (default is 3)
+    26                                             warmup_runs : int
+    27                                                 Number of warmup runs before timing (default is 0)
+    28                                             dtype_c : type
+    29                                                 Data type for the complex grid (e.g. np.complex128)
+    30                                             dtype_out : type
+    31                                                 Data type for the output (e.g. np.int32)
+    32                                             kwargs : dict
+    33                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    34
+    35                                             Returns
+    36                                             -------
+    37                                             tuple
+    38                                                 (median_time, mean_time, stddev_time, result) where result is the output of func_calc
+    39                                             """
+    40
+    41                                             # Prepare kwargs for each function
+    42    256.9 MiB      0.0 MiB           1       gen_kwargs = {'dtype': dtype_c} if dtype_c is not None else {}
+    43    256.9 MiB      0.0 MiB           1       calc_kwargs = {**kwargs}
+    44    256.9 MiB      0.0 MiB           1       if dtype_out is not None:
+    45    256.9 MiB      0.0 MiB           1           calc_kwargs['dtype'] = dtype_out
+    46
+    47    256.9 MiB      0.0 MiB           1       times = []
+    48    256.9 MiB      0.0 MiB           1       result = None
+    49    280.9 MiB      0.0 MiB           2       for _ in range(warmup_runs):
+    50    280.9 MiB     24.0 MiB           1           C = func_gen(image_size, **gen_kwargs)
+    51    280.9 MiB      0.0 MiB           1           func_calc(C, **calc_kwargs)
+    52    320.8 MiB      0.0 MiB          11       for _ in range(n_runs):
+    53    320.8 MiB     39.9 MiB          10           C = func_gen(image_size, **gen_kwargs)
+    54    320.8 MiB      0.0 MiB          10           t0 = time.perf_counter()
+    55    320.8 MiB      0.0 MiB          10           result = func_calc(C, **calc_kwargs)
+    56    320.8 MiB      0.0 MiB          10           times.append(time.perf_counter() - t0)
+    57    320.8 MiB      0.0 MiB           1       median_t = statistics.median(times)
+    58    320.8 MiB      0.0 MiB           1       mean_t = statistics.mean(times)
+    59    320.8 MiB      0.0 MiB           1       stddev_t = statistics.stdev(times) if len(times) > 1 else 0.0
+    60    320.8 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s, Mean: {mean_t:.4f} s, StdDev: {stddev_t:.4f} s "
+    61    320.8 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    62    320.8 MiB      0.0 MiB           1       return median_t, mean_t, stddev_t, result
+
+________________________________________________________________________________________________________________________
+
+Testing 4096x4096 res full numba
+
+------------------------------------------------------------
+dtype_c=complex64 and dtype_out=int32:
+
+Image size 4096x4096:
+Median: 0.6662 s, Mean: 0.6694 s, StdDev: 0.0080 s (min = 0.6639, max = 0.6872)
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     8    188.8 MiB    188.8 MiB           1   @profile
+     9                                         def benchmark(func_gen, func_calc, image_size: int,
+    10                                                       n_runs: int = 3, warmup_runs: int = 0,
+    11                                                       dtype_c: type = None, dtype_out: type = None,
+    12                                                       **kwargs):
+    13                                             """
+    14                                             Time func, return median, mean, and stddev of n_runs.
+    15
+    16                                             Parameters
+    17                                             ----------
+    18                                             func_gen : function
+    19                                                 Function to generate the complex grid for Mandelbrot set
+    20                                             func_calc : function
+    21                                                 Function to perform the computation of the Mandelbrot set
+    22                                             image_size : int
+    23                                                 Resolution of the Mandelbrot set
+    24                                             n_runs : int
+    25                                                 Number of runs to perform for timing (default is 3)
+    26                                             warmup_runs : int
+    27                                                 Number of warmup runs before timing (default is 0)
+    28                                             dtype_c : type
+    29                                                 Data type for the complex grid (e.g. np.complex128)
+    30                                             dtype_out : type
+    31                                                 Data type for the output (e.g. np.int32)
+    32                                             kwargs : dict
+    33                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    34
+    35                                             Returns
+    36                                             -------
+    37                                             tuple
+    38                                                 (median_time, mean_time, stddev_time, result) where result is the output of func_calc
+    39                                             """
+    40
+    41                                             # Prepare kwargs for each function
+    42    188.8 MiB      0.0 MiB           1       gen_kwargs = {'dtype': dtype_c} if dtype_c is not None else {}
+    43    188.8 MiB      0.0 MiB           1       calc_kwargs = {**kwargs}
+    44    188.8 MiB      0.0 MiB           1       if dtype_out is not None:
+    45    188.8 MiB      0.0 MiB           1           calc_kwargs['dtype'] = dtype_out
+    46
+    47    188.8 MiB      0.0 MiB           1       times = []
+    48    188.8 MiB      0.0 MiB           1       result = None
+    49    371.5 MiB      0.0 MiB           2       for _ in range(warmup_runs):
+    50    317.2 MiB    128.4 MiB           1           C = func_gen(image_size, **gen_kwargs)
+    51    371.5 MiB     54.3 MiB           1           func_calc(C, **calc_kwargs)
+    52    435.3 MiB     -3.7 MiB          11       for _ in range(n_runs):
+    53    434.9 MiB     -3.9 MiB          10           C = func_gen(image_size, **gen_kwargs)
+    54    434.9 MiB     -0.8 MiB          10           t0 = time.perf_counter()
+    55    435.3 MiB     63.2 MiB          10           result = func_calc(C, **calc_kwargs)
+    56    435.3 MiB     -3.7 MiB          10           times.append(time.perf_counter() - t0)
+    57    434.8 MiB     -0.4 MiB           1       median_t = statistics.median(times)
+    58    434.8 MiB      0.0 MiB           1       mean_t = statistics.mean(times)
+    59    434.8 MiB      0.0 MiB           1       stddev_t = statistics.stdev(times) if len(times) > 1 else 0.0
+    60    434.8 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s, Mean: {mean_t:.4f} s, StdDev: {stddev_t:.4f} s "
+    61    434.8 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    62    434.8 MiB      0.0 MiB           1       return median_t, mean_t, stddev_t, result
+
+
+
+------------------------------------------------------------
+dtype_c=complex64 and dtype_out=int64:
+
+Image size 4096x4096:
+Median: 0.6935 s, Mean: 0.6970 s, StdDev: 0.0078 s (min = 0.6901, max = 0.7156)
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     8    242.8 MiB    242.8 MiB           1   @profile
+     9                                         def benchmark(func_gen, func_calc, image_size: int,
+    10                                                       n_runs: int = 3, warmup_runs: int = 0,
+    11                                                       dtype_c: type = None, dtype_out: type = None,
+    12                                                       **kwargs):
+    13                                             """
+    14                                             Time func, return median, mean, and stddev of n_runs.
+    15
+    16                                             Parameters
+    17                                             ----------
+    18                                             func_gen : function
+    19                                                 Function to generate the complex grid for Mandelbrot set
+    20                                             func_calc : function
+    21                                                 Function to perform the computation of the Mandelbrot set
+    22                                             image_size : int
+    23                                                 Resolution of the Mandelbrot set
+    24                                             n_runs : int
+    25                                                 Number of runs to perform for timing (default is 3)
+    26                                             warmup_runs : int
+    27                                                 Number of warmup runs before timing (default is 0)
+    28                                             dtype_c : type
+    29                                                 Data type for the complex grid (e.g. np.complex128)
+    30                                             dtype_out : type
+    31                                                 Data type for the output (e.g. np.int32)
+    32                                             kwargs : dict
+    33                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    34
+    35                                             Returns
+    36                                             -------
+    37                                             tuple
+    38                                                 (median_time, mean_time, stddev_time, result) where result is the output of func_calc
+    39                                             """
+    40
+    41                                             # Prepare kwargs for each function
+    42    242.8 MiB      0.0 MiB           1       gen_kwargs = {'dtype': dtype_c} if dtype_c is not None else {}
+    43    242.8 MiB      0.0 MiB           1       calc_kwargs = {**kwargs}
+    44    242.8 MiB      0.0 MiB           1       if dtype_out is not None:
+    45    242.8 MiB      0.0 MiB           1           calc_kwargs['dtype'] = dtype_out
+    46
+    47    242.8 MiB      0.0 MiB           1       times = []
+    48    242.8 MiB      0.0 MiB           1       result = None
+    49    374.7 MiB      0.0 MiB           2       for _ in range(warmup_runs):
+    50    370.8 MiB    128.0 MiB           1           C = func_gen(image_size, **gen_kwargs)
+    51    374.7 MiB      3.8 MiB           1           func_calc(C, **calc_kwargs)
+    52    502.7 MiB      0.0 MiB          11       for _ in range(n_runs):
+    53    502.7 MiB      0.0 MiB          10           C = func_gen(image_size, **gen_kwargs)
+    54    502.7 MiB      0.0 MiB          10           t0 = time.perf_counter()
+    55    502.7 MiB    128.0 MiB          10           result = func_calc(C, **calc_kwargs)
+    56    502.7 MiB      0.0 MiB          10           times.append(time.perf_counter() - t0)
+    57    502.7 MiB      0.0 MiB           1       median_t = statistics.median(times)
+    58    502.7 MiB      0.0 MiB           1       mean_t = statistics.mean(times)
+    59    502.7 MiB      0.0 MiB           1       stddev_t = statistics.stdev(times) if len(times) > 1 else 0.0
+    60    502.7 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s, Mean: {mean_t:.4f} s, StdDev: {stddev_t:.4f} s "
+    61    502.7 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    62    502.7 MiB      0.0 MiB           1       return median_t, mean_t, stddev_t, result
+
+
+
+------------------------------------------------------------
+dtype_c=complex128 and dtype_out=int32:
+
+Image size 4096x4096:
+Median: 0.6663 s, Mean: 0.6698 s, StdDev: 0.0074 s (min = 0.6630, max = 0.6850)
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     8    246.7 MiB    246.7 MiB           1   @profile
+     9                                         def benchmark(func_gen, func_calc, image_size: int,
+    10                                                       n_runs: int = 3, warmup_runs: int = 0,
+    11                                                       dtype_c: type = None, dtype_out: type = None,
+    12                                                       **kwargs):
+    13                                             """
+    14                                             Time func, return median, mean, and stddev of n_runs.
+    15
+    16                                             Parameters
+    17                                             ----------
+    18                                             func_gen : function
+    19                                                 Function to generate the complex grid for Mandelbrot set
+    20                                             func_calc : function
+    21                                                 Function to perform the computation of the Mandelbrot set
+    22                                             image_size : int
+    23                                                 Resolution of the Mandelbrot set
+    24                                             n_runs : int
+    25                                                 Number of runs to perform for timing (default is 3)
+    26                                             warmup_runs : int
+    27                                                 Number of warmup runs before timing (default is 0)
+    28                                             dtype_c : type
+    29                                                 Data type for the complex grid (e.g. np.complex128)
+    30                                             dtype_out : type
+    31                                                 Data type for the output (e.g. np.int32)
+    32                                             kwargs : dict
+    33                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    34
+    35                                             Returns
+    36                                             -------
+    37                                             tuple
+    38                                                 (median_time, mean_time, stddev_time, result) where result is the output of func_calc
+    39                                             """
+    40
+    41                                             # Prepare kwargs for each function
+    42    246.7 MiB      0.0 MiB           1       gen_kwargs = {'dtype': dtype_c} if dtype_c is not None else {}
+    43    246.7 MiB      0.0 MiB           1       calc_kwargs = {**kwargs}
+    44    246.7 MiB      0.0 MiB           1       if dtype_out is not None:
+    45    246.7 MiB      0.0 MiB           1           calc_kwargs['dtype'] = dtype_out
+    46
+    47    246.7 MiB      0.0 MiB           1       times = []
+    48    246.7 MiB      0.0 MiB           1       result = None
+    49    503.3 MiB      0.0 MiB           2       for _ in range(warmup_runs):
+    50    502.7 MiB    256.0 MiB           1           C = func_gen(image_size, **gen_kwargs)
+    51    503.3 MiB      0.6 MiB           1           func_calc(C, **calc_kwargs)
+    52    567.4 MiB     -0.6 MiB          11       for _ in range(n_runs):
+    53    567.4 MiB     -0.5 MiB          10           C = func_gen(image_size, **gen_kwargs)
+    54    567.4 MiB     -0.6 MiB          10           t0 = time.perf_counter()
+    55    567.4 MiB     63.4 MiB          10           result = func_calc(C, **calc_kwargs)
+    56    567.4 MiB     -0.6 MiB          10           times.append(time.perf_counter() - t0)
+    57    567.3 MiB     -0.1 MiB           1       median_t = statistics.median(times)
+    58    567.3 MiB      0.0 MiB           1       mean_t = statistics.mean(times)
+    59    567.3 MiB      0.0 MiB           1       stddev_t = statistics.stdev(times) if len(times) > 1 else 0.0
+    60    567.3 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s, Mean: {mean_t:.4f} s, StdDev: {stddev_t:.4f} s "
+    61    567.3 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    62    567.3 MiB      0.0 MiB           1       return median_t, mean_t, stddev_t, result
+
+
+
+------------------------------------------------------------
+dtype_c=complex128 and dtype_out=int64:
+
+Image size 4096x4096:
+Median: 0.6903 s, Mean: 0.6910 s, StdDev: 0.0056 s (min = 0.6803, max = 0.7013)
+Filename: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/util.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     8    247.3 MiB    247.3 MiB           1   @profile
+     9                                         def benchmark(func_gen, func_calc, image_size: int,
+    10                                                       n_runs: int = 3, warmup_runs: int = 0,
+    11                                                       dtype_c: type = None, dtype_out: type = None,
+    12                                                       **kwargs):
+    13                                             """
+    14                                             Time func, return median, mean, and stddev of n_runs.
+    15
+    16                                             Parameters
+    17                                             ----------
+    18                                             func_gen : function
+    19                                                 Function to generate the complex grid for Mandelbrot set
+    20                                             func_calc : function
+    21                                                 Function to perform the computation of the Mandelbrot set
+    22                                             image_size : int
+    23                                                 Resolution of the Mandelbrot set
+    24                                             n_runs : int
+    25                                                 Number of runs to perform for timing (default is 3)
+    26                                             warmup_runs : int
+    27                                                 Number of warmup runs before timing (default is 0)
+    28                                             dtype_c : type
+    29                                                 Data type for the complex grid (e.g. np.complex128)
+    30                                             dtype_out : type
+    31                                                 Data type for the output (e.g. np.int32)
+    32                                             kwargs : dict
+    33                                                 Additional keyword arguments to pass to func_calc (e.g. threshold, max_iterations)
+    34
+    35                                             Returns
+    36                                             -------
+    37                                             tuple
+    38                                                 (median_time, mean_time, stddev_time, result) where result is the output of func_calc
+    39                                             """
+    40
+    41                                             # Prepare kwargs for each function
+    42    247.3 MiB      0.0 MiB           1       gen_kwargs = {'dtype': dtype_c} if dtype_c is not None else {}
+    43    247.3 MiB      0.0 MiB           1       calc_kwargs = {**kwargs}
+    44    247.3 MiB      0.0 MiB           1       if dtype_out is not None:
+    45    247.3 MiB      0.0 MiB           1           calc_kwargs['dtype'] = dtype_out
+    46
+    47    247.3 MiB      0.0 MiB           1       times = []
+    48    247.3 MiB      0.0 MiB           1       result = None
+    49    503.9 MiB      0.0 MiB           2       for _ in range(warmup_runs):
+    50    503.3 MiB    256.0 MiB           1           C = func_gen(image_size, **gen_kwargs)
+    51    503.9 MiB      0.6 MiB           1           func_calc(C, **calc_kwargs)
+    52    632.0 MiB      0.0 MiB          11       for _ in range(n_runs):
+    53    632.0 MiB      0.0 MiB          10           C = func_gen(image_size, **gen_kwargs)
+    54    632.0 MiB      0.0 MiB          10           t0 = time.perf_counter()
+    55    632.0 MiB    128.0 MiB          10           result = func_calc(C, **calc_kwargs)
+    56    632.0 MiB      0.0 MiB          10           times.append(time.perf_counter() - t0)
+    57    632.0 MiB      0.0 MiB           1       median_t = statistics.median(times)
+    58    632.0 MiB      0.0 MiB           1       mean_t = statistics.mean(times)
+    59    632.0 MiB      0.0 MiB           1       stddev_t = statistics.stdev(times) if len(times) > 1 else 0.0
+    60    632.0 MiB      0.0 MiB           3       print(f"Median: {median_t:.4f} s, Mean: {mean_t:.4f} s, StdDev: {stddev_t:.4f} s "
+    61    632.0 MiB      0.0 MiB           2             f"(min = {min(times):.4f}, max = {max(times):.4f})")
+    62    632.0 MiB      0.0 MiB           1       return median_t, mean_t, stddev_t, result

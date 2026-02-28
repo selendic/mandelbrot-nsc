@@ -1,0 +1,5 @@
+I learned first and foremost to think about the optimization possibilities at all while writing code, and that there are many options and approaches for such, not just GPU utilization which first comes to mind and is pretty situational and often complicated to implement. I learned why NumPy is used all the time and why it provides the performance benefits that it does, and I learned about Numba/jit from the beginning (didn't know about them before).
+
+The biggest challenge was, honestly, how to structure the whole project, and unfortunately I do not think I did such a good job as I would expect from myself. On the other hand, I think most of it boils down to the fact that I did not know in advance what was coming and which specific upgrades will we need to add in the future; however, that is the case often in real life and work environments too, I believe.
+
+I cannot think of anything that particularly surprised me. Perhaps the second task among M5 (optional) tasks, which is to just try out parallelization options of Numba/njit, and which added a LOT of extra speedup. I did not expect such an improvement on an optional task, but that is it.

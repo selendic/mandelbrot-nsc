@@ -93,7 +93,7 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
     62                                                   2D array representing the Mandelbrot set
     63                                               """
     64
-    65         1         48.3     48.3      0.0      mandelbrot_set = np.zeros(C.shape, dtype=int)
+    65         1         48.3     48.3      0.0      mandelbrot_set = np.zeros(C.shape, dtype=np.int32)
     66      1025         75.9      0.1      0.0      for i in range(C.shape[0]):
     67   1049600      70070.7      0.1      0.6          for j in range(C.shape[1]):
     68   1048576   10747554.0     10.2     99.4              mandelbrot_set[i, j] = mandelbrot_point(C[i, j], max_iterations)

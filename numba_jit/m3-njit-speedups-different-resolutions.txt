@@ -1,0 +1,43 @@
+Image size 256x256:
+Results are close enough: True
+Mandelbrot set generated in:
+- Naive: 0.135 seconds; 1.0x speedup
+- Numpy: 0.015 seconds; 8.92x speedup
+- Numba Hybrid: 0.016 seconds; 8.31x speedup
+- Numba Full: 0.003 seconds; 52.73x speedup
+
+
+Image size 512x512:
+Results are close enough: True
+Mandelbrot set generated in:
+- Naive: 0.541 seconds; 1.0x speedup
+- Numpy: 0.060 seconds; 9.04x speedup
+- Numba Hybrid: 0.065 seconds; 8.27x speedup
+- Numba Full: 0.010 seconds; 52.78x speedup
+
+
+Image size 1024x1024:
+Results are close enough: True
+Mandelbrot set generated in:
+- Naive: 2.135 seconds; 1.0x speedup
+- Numpy: 0.364 seconds; 5.87x speedup
+- Numba Hybrid: 0.259 seconds; 8.24x speedup
+- Numba Full: 0.040 seconds; 52.83x speedup
+
+
+Image size 2048x2048:
+Results are close enough: True
+Mandelbrot set generated in:
+- Naive: 8.561 seconds; 1.0x speedup
+- Numpy: 1.642 seconds; 5.21x speedup
+- Numba Hybrid: 1.036 seconds; 8.27x speedup
+- Numba Full: 0.160 seconds; 53.37x speedup
+
+
+Image size 4096x4096:
+Results are close enough: True
+Mandelbrot set generated in:
+- Naive: 35.911 seconds; 1.0x speedup
+- Numpy: 7.532 seconds; 4.77x speedup
+- Numba Hybrid: 4.132 seconds; 8.69x speedup
+- Numba Full: 0.686 seconds; 52.35x speedup

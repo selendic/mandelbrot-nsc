@@ -16,7 +16,7 @@ from util import mandelbrot_time_test
 
 matplotlib.use('TkAgg')
 
-def compute_mandelbrot(C: np.ndarray, threshold: int = 2, max_iter=100) -> np.ndarray:
+def compute_mandelbrot(C: np.ndarray, threshold: int = 2, max_iter=100, dtype: type = np.int32) -> np.ndarray:
     """
     Calculates the number of iterations for each point in the array to escape the Mandelbrot set.
 
@@ -28,15 +28,17 @@ def compute_mandelbrot(C: np.ndarray, threshold: int = 2, max_iter=100) -> np.nd
         Escape threshold (default is 2)
     max_iter : int
         Maximum number of iterations (default is 100)
+    dtype : type
+        Data type for the output array (default is np.int32)
 
     Returns
     -------
     int
         2D array of integers representing the number of iterations before escape, or max_iterations if one does not escape
     """
-
-    z = np.zeros_like(C, dtype=np.complex128)
-    output = np.zeros(C.shape, dtype=int)
+    dtype_c = C.dtype
+    z = np.zeros_like(C, dtype=dtype_c)
+    output = np.zeros(C.shape, dtype=dtype)
     mask = np.ones(C.shape, dtype=bool)
 
     for n in range(max_iter):
@@ -49,7 +51,7 @@ def compute_mandelbrot(C: np.ndarray, threshold: int = 2, max_iter=100) -> np.nd
     return output
 
 
-def generate_complex_grid(image_size: int) -> np.ndarray:
+def generate_complex_grid(image_size: int, dtype: int = np.complex128) -> np.ndarray:
     """
     Generate the complex grid for the Mandelbrot set.
 
@@ -57,14 +59,22 @@ def generate_complex_grid(image_size: int) -> np.ndarray:
     ----------
     image_size : int
         Size of the output image (default is 256)
+    dtype : type
+        Data type for the complex grid (default is np.complex128)
 
     Returns
     -------
         The complex grid for the Mandelbrot set as a 2D array of complex numbers.
 
     """
-    xs = np.linspace(-2, 1, image_size)
-    ys = np.linspace(-1.5, 1.5, image_size)
+    if dtype == np.complex128:
+        dtype = np.float64
+    elif dtype == np.complex64:
+        dtype = np.float32
+    else:
+        raise ValueError("Unsupported dtype for complex grid. Use np.complex128 or np.complex64.")
+    xs = np.linspace(-2, 1, image_size, dtype=dtype)
+    ys = np.linspace(-1.5, 1.5, image_size, dtype=dtype)
     X, Y = np.meshgrid(xs, ys)
     C = X + 1j * Y
 
@@ -98,7 +108,7 @@ def main(image_size=4096):
 if __name__ == "__main__":
     # main(image_size=4096)
 
-    times, image_sizes = mandelbrot_time_test(
+    results, medians, means, stddevs, image_sizes = mandelbrot_time_test(
         func_gen=generate_complex_grid,
         func_calc=compute_mandelbrot,
         top_size_log_2=4,

@@ -25,6 +25,8 @@ def mandelbrot_point(c, max_iter=100):
     ----------
     c : complex
         Complex point to evaluate
+    max_iter : int
+        Maximum number of iterations (default is 100)
 
     Returns
     -------
@@ -41,20 +43,20 @@ def mandelbrot_point(c, max_iter=100):
 
 
 @profile
-def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100):
+def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100, dtype=np.int32) -> np.ndarray:
     """
     Generates the Mandelbrot set (naively).
 
     Parameters
     ----------
-    set: np.ndarray
+    C: np.ndarray
         Array of complex numbers representing the points to evaluate
     threshold : float
         Escape threshold (default is 2)
     max_iterations : int
         Maximum number of iterations (default is 100)
-    image_size : int
-        Size of the output image (default is 256)
+    dtype : type
+        Data type for the output array (default is np.int32)
 
     Returns
     -------
@@ -62,7 +64,7 @@ def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100):
         2D array representing the Mandelbrot set
     """
 
-    mandelbrot_set = np.zeros(C.shape, dtype=int)
+    mandelbrot_set = np.zeros(C.shape, dtype=dtype)
     for i in range(C.shape[0]):
         for j in range(C.shape[1]):
             mandelbrot_set[i, j] = mandelbrot_point(C[i, j], max_iterations)
@@ -71,7 +73,7 @@ def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100):
 
 
 @profile
-def generate_complex_grid(image_size: int):
+def generate_complex_grid(image_size: int, dtype: int = np.complex128) -> np.ndarray:
     """
     Generate the complex grid for the Mandelbrot set.
 
@@ -79,15 +81,17 @@ def generate_complex_grid(image_size: int):
     ----------
     image_size
         Size of the output image (default is 256)
+    dtype : type
+        Data type for the complex grid (default is np.complex128)
 
     Returns
-        The complex grid for the Mandelbrot set as a 2D array of complex numbers.
     -------
+        The complex grid for the Mandelbrot set as a 2D array of complex numbers.
 
     """
     X = np.linspace(-2, 1, image_size)
     Y = np.linspace(-1.5, 1.5, image_size)
-    C = np.array([[complex(x, y) for x in X] for y in Y])
+    C = np.array([[complex(x, y) for x in X] for y in Y], dtype=dtype)
 
     return C
 
@@ -109,7 +113,7 @@ def main(image_size=4096):
 if __name__ == "__main__":
     # main(image_size=1024)
 
-    times, image_sizes = mandelbrot_time_test(
+    results, medians, means, stddevs, image_sizes = mandelbrot_time_test(
         func_gen=generate_complex_grid,
         func_calc=compute_mandelbrot,
         top_size_log_2=4,

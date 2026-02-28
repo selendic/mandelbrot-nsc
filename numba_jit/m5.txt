@@ -1,0 +1,72 @@
+1)
+
+Testing 1024x1024 res full numba njit
+dtype_c=complex128 and dtype_out=int32:
+
+Image size 1024x1024:
+Median: 0.0403 s, Mean: 0.0405 s, StdDev: 0.0005 s (min = 0.0402, max = 0.0418)
+
+------------------------------------------------------------
+
+Testing 1024x1024 res full numba jit
+dtype_c=complex128 and dtype_out=int32:
+
+Image size 1024x1024:
+Median: 0.0404 s, Mean: 0.0405 s, StdDev: 0.0004 s (min = 0.0403, max = 0.0417)
+
+########################################################################################################################
+
+2)
+
+Testing 1024x1024 res full numba njit parallel
+dtype_c=complex128 and dtype_out=int32:
+
+Image size 1024x1024:
+Median: 0.0081 s, Mean: 0.0087 s, StdDev: 0.0012 s (min = 0.0076, max = 0.0115)
+
+3)
+
+Image size 256x256:
+Results are close enough: True
+Mandelbrot set generation times (avg ± std) [median speedup]:
+  - Naive:               0.1599 ± 0.0095s  [1.00x]
+  - Numpy:               0.0165 ± 0.0004s  [9.62x]
+  - Numba Hybrid:        0.0164 ± 0.0005s  [9.72x]
+  - Numba Full:          0.0026 ± 0.0001s  [58.77x]
+  - Numba Full Parallel: 0.0009 ± 0.0013s  [303.63x]
+
+Image size 512x512:
+Results are close enough: True
+Mandelbrot set generation times (avg ± std) [median speedup]:
+  - Naive:               0.5952 ± 0.0060s  [1.00x]
+  - Numpy:               0.0682 ± 0.0069s  [9.28x]
+  - Numba Hybrid:        0.0647 ± 0.0003s  [9.21x]
+  - Numba Full:          0.0104 ± 0.0002s  [57.77x]
+  - Numba Full Parallel: 0.0020 ± 0.0001s  [300.99x]
+
+Image size 1024x1024:
+Results are close enough: True
+Mandelbrot set generation times (avg ± std) [median speedup]:
+  - Naive:               2.3765 ± 0.0449s  [1.00x]
+  - Numpy:               0.3883 ± 0.0088s  [6.09x]
+  - Numba Hybrid:        0.2645 ± 0.0038s  [8.99x]
+  - Numba Full:          0.0419 ± 0.0009s  [56.49x]
+  - Numba Full Parallel: 0.0100 ± 0.0025s  [266.64x]
+
+Image size 2048x2048:
+Results are close enough: True
+Mandelbrot set generation times (avg ± std) [median speedup]:
+  - Naive:               9.5216 ± 0.0443s  [1.00x]
+  - Numpy:               1.7902 ± 0.0241s  [5.33x]
+  - Numba Hybrid:        1.0442 ± 0.0158s  [9.20x]
+  - Numba Full:          0.1611 ± 0.0014s  [59.46x]
+  - Numba Full Parallel: 0.0330 ± 0.0023s  [294.10x]
+
+Image size 4096x4096:
+Results are close enough: True
+Mandelbrot set generation times (avg ± std) [median speedup]:
+  - Naive:               38.1425 ± 0.4284s  [1.00x]
+  - Numpy:               24.4803 ± 1.4761s  [1.53x]
+  - Numba Hybrid:        4.2149 ± 0.0785s  [8.98x]
+  - Numba Full:          0.6738 ± 0.0075s  [56.70x]
+  - Numba Full Parallel: 0.1321 ± 0.0036s  [287.06x]

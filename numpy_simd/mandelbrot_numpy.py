@@ -16,6 +16,7 @@ from util import mandelbrot_time_test
 
 matplotlib.use('TkAgg')
 
+
 def compute_mandelbrot(C: np.ndarray, threshold: int = 2, max_iter=100, dtype: type = np.int32) -> np.ndarray:
     """
     Calculates the number of iterations for each point in the array to escape the Mandelbrot set.
@@ -93,8 +94,8 @@ def main(image_size=4096):
     mandelbrot_set_np = compute_mandelbrot(C)
     end_time_np = time.perf_counter()
     print(f"Mandelbrot set generated in:\n"
-            f"- Naive: {end_time_naive - start_time_naive:.2f} seconds\n"
-            f"- Numpy: {end_time_np - start_time_np:.2f} seconds")
+          f"- Naive: {end_time_naive - start_time_naive:.2f} seconds\n"
+          f"- Numpy: {end_time_np - start_time_np:.2f} seconds")
 
     all_close = np.allclose(mandelbrot_set_naive, mandelbrot_set_np)
     print(f"Results are close enough: {all_close}")

@@ -6,7 +6,7 @@ dtype_c=complex128 and dtype_out=int32:
 Image size 1024x1024:
 Median: 0.0403 s, Mean: 0.0405 s, StdDev: 0.0005 s (min = 0.0402, max = 0.0418)
 
-------------------------------------------------------------
+_______________________________________________________________________________
 
 Testing 1024x1024 res full numba jit
 dtype_c=complex128 and dtype_out=int32:
@@ -67,6 +67,6 @@ Results are close enough: True
 Mandelbrot set generation times (avg ± std) [median speedup]:
   - Naive:               38.1425 ± 0.4284s  [1.00x]
   - Numpy:               24.4803 ± 1.4761s  [1.53x]
-  - Numba Hybrid:        4.2149 ± 0.0785s  [8.98x]
-  - Numba Full:          0.6738 ± 0.0075s  [56.70x]
-  - Numba Full Parallel: 0.1321 ± 0.0036s  [287.06x]
+  - Numba Hybrid:         4.2149 ± 0.0785s  [8.98x]
+  - Numba Full:           0.6738 ± 0.0075s  [56.70x]
+  - Numba Full Parallel:  0.1321 ± 0.0036s  [287.06x]

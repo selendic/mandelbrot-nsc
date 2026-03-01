@@ -1,6 +1,4 @@
 import numpy as np
-from itertools import product
-from matplotlib import pyplot as plt
 from numba import njit, prange
 
 from numba_jit.mandelbrot_numba_jit import generate_complex_grid, mandelbrot_naive_full_numba
@@ -78,8 +76,6 @@ def main2():
         dtype_out=dtype_out,
         show_plots=False
     )
-
-
 
 
 if __name__ == "__main__":

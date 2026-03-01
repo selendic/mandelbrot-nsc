@@ -1,8 +1,6 @@
-import cProfile, pstats
-from naive import mandelbrot_naive
-from numpy_simd import mandelbrot_numpy
+import cProfile
+import pstats
 
-from util import mandelbrot_time_test
 
 def main():
     cProfile.run("""mandelbrot_time_test(

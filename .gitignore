@@ -1,4 +1,5 @@
 .idea/*
 numba_jit/*.png
+src/*
 
 git_log.txt

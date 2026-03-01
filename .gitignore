@@ -1,1 +1,4 @@
 .idea/*
+numba_jit/*.png
+
+git_log.txt

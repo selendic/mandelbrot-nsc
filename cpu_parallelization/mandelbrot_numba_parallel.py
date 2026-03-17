@@ -369,28 +369,28 @@ def parallel_benchmark_whole(N: int):
     ======================================================================
     Workers    Time (s)     Speedup      Efficiency (%) 
     ----------------------------------------------------------------------
-    1          0.0557       1.00         100.0          
-    2          0.0274       2.03         101.6          
-    3          0.0369       1.51         50.4           
-    4          0.0238       2.34         58.5           
-    5          0.0259       2.15         43.1           
-    6          0.0203       2.75         45.8           
-    7          0.0202       2.76         39.4           
-    8          0.0167       3.35         41.8           
-    9          0.0163       3.43         38.1           
-    10         0.0150       3.72         37.2           
-    11         0.0140       3.98         36.2           
-    12         0.0132       4.22         35.2           
-    13         0.0127       4.39         33.8           
-    14         0.0120       4.65         33.2           
-    15         0.0115       4.84         32.3           
-    16         0.0112       4.96         31.0           
+    1          0.0553       1.00         100.0          
+    2          0.0287       1.92         96.2           
+    3          0.0365       1.52         50.5           
+    4          0.0236       2.34         58.5           
+    5          0.0260       2.13         42.6           
+    6          0.0200       2.76         46.0           
+    7          0.0199       2.77         39.6           
+    8          0.0169       3.27         40.9           
+    9          0.0163       3.38         37.6           
+    10         0.0145       3.81         38.1           
+    11         0.0141       3.92         35.6           
+    12         0.0131       4.23         35.2           
+    13         0.0136       4.06         31.3           
+    14         0.0122       4.54         32.4           
+    15         0.0116       4.78         31.9           
+    16         0.0115       4.82         30.1           
     ======================================================================
     
     Key Metrics:
-      Serial time (1 worker):    0.0557s
-      Fastest time (16 workers): 0.0112s
-      Best speedup:              4.96x
+      Serial time (1 worker):    0.0553s
+      Fastest time (16 workers): 0.0115s
+      Best speedup:              4.82x
     
     ######################################################################
     
@@ -399,28 +399,28 @@ def parallel_benchmark_whole(N: int):
     ======================================================================
     Workers    Time (s)     Speedup      Efficiency (%) 
     ----------------------------------------------------------------------
-    1          0.9046       1.00         100.0          
-    2          0.5036       1.80         89.8           
-    3          0.5960       1.52         50.6           
-    4          0.3883       2.33         58.2           
-    5          0.4131       2.19         43.8           
-    6          0.3002       3.01         50.2           
-    7          0.2966       3.05         43.6           
-    8          0.2481       3.65         45.6           
-    9          0.2383       3.80         42.2           
-    10         0.2056       4.40         44.0           
-    11         0.1993       4.54         41.3           
-    12         0.1836       4.93         41.1           
-    13         0.1746       5.18         39.8           
-    14         0.1614       5.60         40.0           
-    15         0.1539       5.88         39.2           
-    16         0.1466       6.17         38.6           
+    1          0.9126       1.00         100.0          
+    2          0.5125       1.78         89.0           
+    3          0.6002       1.52         50.7           
+    4          0.4013       2.27         56.9           
+    5          0.4270       2.14         42.7           
+    6          0.3035       3.01         50.1           
+    7          0.2977       3.07         43.8           
+    8          0.2462       3.71         46.3           
+    9          0.2378       3.84         42.6           
+    10         0.2094       4.36         43.6           
+    11         0.2007       4.55         41.3           
+    12         0.1867       4.89         40.7           
+    13         0.1735       5.26         40.5           
+    14         0.1619       5.64         40.3           
+    15         0.1560       5.85         39.0           
+    16         0.1477       6.18         38.6           
     ======================================================================
     
     Key Metrics:
-      Serial time (1 worker):    0.9046s
-      Fastest time (16 workers): 0.1466s
-      Best speedup:              6.17x
+      Serial time (1 worker):    0.9126s
+      Fastest time (16 workers): 0.1477s
+      Best speedup:              6.18x
     """
 
 
@@ -557,17 +557,18 @@ def parallel_benchmark_chunkified(N: int):
     print(f"\nPlot saved as '{output_file}'")
 
     print(f"\n{'=' * 75}")
-    print(f"Chunk Sweep Summary ({N}×{N} resolution; {num_workers} workers):")
+    print(f"Chunk Sweep Summary ({N}×{N} resolution; {num_workers} workers; T1={T1:.4f}s):")
     print(f"{'=' * 75}")
-    print(f"{'Multiplier':<12} {'Chunks':<10} {'Time (s)':<12} {'Speedup':<12} {'Efficiency (%)':<15}")
+    print(f"{'Multiplier':<12} {'Chunks':<10} {'Time (s)':<12} {'Speedup':<12} {'Efficiency (%)':<16} {'LIF':<8}")
     print(f"{'-' * 75}")
     for i, (m, c) in enumerate(zip(chunk_multipliers, chunk_counts)):
         if m < 10:
-            print(f"{m}×{'':<10} {c:<10} {times_array[i]:<12.4f} {speedup[i]:<12.2f} {efficiency[i]:<15.1f}")
+            print(f"{m}×{'':<10} {c:<10} {times_array[i]:<12.4f} {speedup[i]:<12.2f} {efficiency[i]:<16.1f} {lif[i]:<8.3f}")
         else:
-            print(f"{m}×{'':<9} {c:<10} {times_array[i]:<12.4f} {speedup[i]:<12.2f} {efficiency[i]:<15.1f}")
+            print(f"{m}×{'':<9} {c:<10} {times_array[i]:<12.4f} {speedup[i]:<12.2f} {efficiency[i]:<16.1f} {lif[i]:<8.3f}")
     print(f"{'=' * 75}")
     print(f"\nKey Metrics:")
+    print(f"  Serial time T1:          {T1:.4f}s")
     print(f"  Baseline (1× / {num_workers} chunks): {baseline_time:.4f}s")
     print(f"  Fastest ({chunk_multipliers[np.argmin(times_array)]}× / "
           f"{chunk_counts[np.argmin(times_array)]} chunks): {times_array.min():.4f}s")
@@ -578,42 +579,44 @@ def parallel_benchmark_chunkified(N: int):
 
     """
     ===========================================================================
-    Chunk Sweep Summary (1024×1024 resolution; 16 workers):
+    Chunk Sweep Summary (1024×1024 resolution; 16 workers; T1=0.0441s):
     ===========================================================================
-    Multiplier   Chunks     Time (s)     Speedup      Efficiency (%) 
+    Multiplier   Chunks     Time (s)     Speedup      Efficiency (%)   LIF     
     ---------------------------------------------------------------------------
-    1×           16         0.0116       1.00         100.0          
-    2×           32         0.0114       1.01         50.6           
-    4×           64         0.0180       0.64         16.1           
-    8×           128        0.0166       0.70         8.7            
-    16×          256        0.0184       0.63         3.9            
+    1×           16         0.0116       1.00         100.0            3.206   
+    2×           32         0.0109       1.06         52.9             2.972   
+    4×           64         0.0176       0.66         16.4             5.396   
+    8×           128        0.0175       0.66         8.3              5.336   
+    16×          256        0.0170       0.68         4.3              5.157   
     ===========================================================================
     
     Key Metrics:
+      Serial time T1:          0.0441s
       Baseline (1× / 16 chunks): 0.0116s
-      Fastest (2× / 32 chunks): 0.0114s
-      Best relative speedup:   1.01x  @ 2× chunks
-      Min LIF (best balance):  3.130  @ 2× chunks
+      Fastest (2× / 32 chunks): 0.0109s
+      Best relative speedup:   1.06x  @ 2× chunks
+      Min LIF (best balance):  2.972  @ 2× chunks
     
     ###########################################################################
     
     ===========================================================================
-    Chunk Sweep Summary (4096×4096 resolution; 16 workers):
+    Chunk Sweep Summary (4096×4096 resolution; 16 workers; T1=0.7299s):
     ===========================================================================
-    Multiplier   Chunks     Time (s)     Speedup      Efficiency (%) 
+    Multiplier   Chunks     Time (s)     Speedup      Efficiency (%)   LIF     
     ---------------------------------------------------------------------------
-    1×           16         0.1461       1.00         100.0          
-    2×           32         0.1034       1.41         70.7           
-    4×           64         0.0983       1.49         37.1           
-    8×           128        0.1105       1.32         16.5           
-    16×          256        0.1021       1.43         8.9            
+    1×           16         0.1481       1.00         100.0            2.245   
+    2×           32         0.0989       1.50         74.8             1.168   
+    4×           64         0.1127       1.31         32.8             1.471   
+    8×           128        0.1379       1.07         13.4             2.022   
+    16×          256        0.1009       1.47         9.2              1.211   
     ===========================================================================
     
     Key Metrics:
-      Baseline (1× / 16 chunks): 0.1461s
-      Fastest (4× / 64 chunks): 0.0983s
-      Best relative speedup:   1.49x  @ 4× chunks
-      Min LIF (best balance):  1.162  @ 4× chunks
+      Serial time T1:          0.7299s
+      Baseline (1× / 16 chunks): 0.1481s
+      Fastest (2× / 32 chunks): 0.0989s
+      Best relative speedup:   1.50x  @ 2× chunks
+      Min LIF (best balance):  1.168  @ 2× chunks
     """
 
 
@@ -621,7 +624,7 @@ if __name__ == "__main__":
     # serial_sanity_check()
     # parallel_sanity_check()
     # parallel_timing()
-    parallel_benchmark_whole(1024)
-    parallel_benchmark_whole(4096)
+    #parallel_benchmark_whole(1024)
+    #parallel_benchmark_whole(4096)
     parallel_benchmark_chunkified(1024)
     parallel_benchmark_chunkified(4096)

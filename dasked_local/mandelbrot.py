@@ -5,6 +5,8 @@ import math
 import matplotlib.pyplot as plt
 from numba import njit
 
+REMOTE_CLIENT_STR = "tcp://10.92.1.177:8786"
+
 
 @njit(cache=True)
 def mandelbrot_chunk_early_exit(row_start: int, row_end: int,
@@ -124,8 +126,9 @@ def mandelbrot_serial_blocks(N, x_min, x_max, y_min, y_max,
 def m1():
     N, max_iter = 1024, 100
     X_MIN, X_MAX, Y_MIN, Y_MAX = -2.5, 1.0, -1.25, 1.25
-    cluster = LocalCluster(n_workers=8, threads_per_worker=1)
-    client = Client(cluster)
+    # cluster = LocalCluster(n_workers=8, threads_per_worker=1)
+    # client = Client(cluster) ->
+    client = Client(REMOTE_CLIENT_STR)
     # warm up all workers
     client.run(lambda: mandelbrot_chunk_early_exit(0, 8, 0, 8, 8, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter=10))
 
@@ -145,7 +148,7 @@ def m1():
     print("Verification passed: dask output matches serial output.")
     print(f"Dask local (3 runs, n_chunks=32): median {statistics.median(times):.3f} s")
     client.close()
-    cluster.close()
+    # cluster.close()
 
     """
     Verification passed: dask output matches serial output.

@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from numba import njit
 
 REMOTE_CLIENT_STR = "tcp://10.92.1.177:8786"
+NUM_RUNS = 5
 
 
 @njit(cache=True)
@@ -140,13 +141,13 @@ def m1():
 		raise AssertionError("Dask result does not match serial reference output.")
 
 	times = []
-	for _ in range(3):
+	for _ in range(NUM_RUNS):
 		# Measure one full Dask run.
 		t0 = time.perf_counter()
 		result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)
 		times.append(time.perf_counter() - t0)
 	print("Verification passed: dask output matches serial output.")
-	print(f"Dask local (3 runs, n_chunks=32): median {statistics.median(times):.3f} s")
+	print(f"Dask local ({NUM_RUNS} runs, n_chunks=32): median {statistics.median(times):.3f} s")
 	client.close()
 	# cluster.close()
 
@@ -172,7 +173,6 @@ def _run_m2_case(use_early_exit):
 	chunk_multipliers = [1, 2, 4, 8, 16, 32, 64, 128]
 	max_iter = 100
 	x_min, x_max, y_min, y_max = -2.5, 1.0, -1.25, 1.25
-	n_runs = 5
 	serial_baseline_chunks = 1
 	mode = "with_early_exit" if use_early_exit else "without_early_exit"
 
@@ -215,7 +215,7 @@ def _run_m2_case(use_early_exit):
 					n_chunks=serial_baseline_chunks,
 					use_early_exit=use_early_exit,
 				),
-				runs=n_runs,
+				runs=NUM_RUNS,
 			)
 
 			n_chunks_values = [workers * mult for mult in chunk_multipliers]
@@ -244,7 +244,7 @@ def _run_m2_case(use_early_exit):
 					)
 
 				# Median runtime (Tp) for this chunk setting.
-				tp = _median_runtime(run_dask_once, runs=n_runs)
+				tp = _median_runtime(run_dask_once, runs=NUM_RUNS)
 
 				# First iteration is the 1x baseline; capture it rather than measuring separately.
 				if baseline_1x is None:
@@ -264,7 +264,7 @@ def _run_m2_case(use_early_exit):
 			all_series[N] = rows
 
 			print(
-				f"\nN={N} (serial T1, 1 chunk median over {n_runs} runs: {t1_serial:.4f} s; "
+				f"\nN={N} (serial T1, 1 chunk median over {NUM_RUNS} runs: {t1_serial:.4f} s; "
 				f"16-worker 1x baseline: {baseline_1x:.4f} s; mode={mode})"
 			)
 			print("n chunks | time (s) | vs 1x | speedup | LIF")
@@ -454,5 +454,29 @@ def m2():
 
 
 if __name__ == "__main__":
-	# m1()
-	m2()
+	m1()
+	# m2()
+
+	#######################
+	"""
+	ssh -i ~/.ssh/id_ed25519 ubuntu@10.92.1.245
+	/opt/miniconda3/condabin/conda init
+	( conda activate nsc-2026 )
+	dask worker 10.92.1.177:8786 --nworkers -1 --nthreads 1
+	"""
+
+	"""
+	1 instance (4 workers):
+	Verification passed: dask output matches serial output.
+	Dask local (5 runs, n_chunks=32): median 0.095 s
+
+	2 instances (8 workers):
+	Verification passed: dask output matches serial output.
+	Dask local (5 runs, n_chunks=32): median 0.085 s
+
+	3 instances (12 workers):
+
+
+	4 instances (16 workers):
+
+	"""

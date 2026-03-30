@@ -466,9 +466,45 @@ def m2():
 	###################################################################################################################
 
 
+def plot_worker_scaling():
+	data = {
+		4:  [0.700, 0.718, 0.732, 0.703],
+		8:  [0.621, 0.592, 0.626, 0.650],
+		12: [0.515, 0.538, 0.529, 0.527],
+		16: [0.484, 0.499, 0.490, 0.493],
+	}
+
+	workers = []
+	times = []
+	avgs = []
+
+	for w, runs in data.items():
+		workers.extend([w] * len(runs))
+		times.extend(runs)
+		avgs.append((w, np.mean(runs)))
+
+	avg_x, avg_y = zip(*avgs)
+
+	fig, ax = plt.subplots(figsize=(8, 5))
+
+	ax.scatter(workers, times, color="steelblue", alpha=0.6, zorder=2, label="Individual medians")
+	ax.plot(avg_x, avg_y, color="tomato", marker="D", linewidth=2, markersize=7, zorder=3, label="Median avg")
+
+	ax.set_xlabel("Worker count")
+	ax.set_ylabel("Time (s)")
+	ax.set_title("Dask Worker Scaling (N=4096, chunks=128)")
+	ax.set_xticks(list(data.keys()))
+	ax.legend()
+	ax.grid(True, linestyle="--", alpha=0.4)
+
+	plt.tight_layout()
+	plt.savefig("worker_scaling_N=4096.png", dpi=300)
+
+
 if __name__ == "__main__":
-	m1(N=4096, n_chunks=128)
+	# m1(N=4096, n_chunks=128)
 	# m2()
+	plot_worker_scaling()
 
 	#######################
 	"""

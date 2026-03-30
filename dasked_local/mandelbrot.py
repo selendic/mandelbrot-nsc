@@ -124,19 +124,25 @@ def mandelbrot_serial_blocks(N, x_min, x_max, y_min, y_max,
 	return result
 
 
-def m1():
-	N, max_iter = 1024, 100
+def m1(N: int = 1024, n_chunks: int = None):
+	max_iter = 100
 	X_MIN, X_MAX, Y_MIN, Y_MAX = -2.5, 1.0, -1.25, 1.25
 	# cluster = LocalCluster(n_workers=8, threads_per_worker=1)
 	# client = Client(cluster) ->
 	client = Client(REMOTE_CLIENT_STR)
+	print(client)
+	workers = len(client.scheduler_info(-1)["workers"])
+	if workers == 0:
+		raise RuntimeError("Remote Dask cluster has no connected workers.")
+	if n_chunks is None:
+		n_chunks = workers
 	# warm up all workers
 	client.run(lambda: mandelbrot_chunk_early_exit(0, 8, 0, 8, 8, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter=10))
 
 	# Reference result from one full-grid kernel call.
 	ref = mandelbrot_chunk_early_exit(0, N, 0, N, N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter=max_iter)
 	# Dask-computed result to compare against the reference.
-	result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)
+	result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter, n_chunks=n_chunks)
 	if not np.array_equal(ref, result):
 		raise AssertionError("Dask result does not match serial reference output.")
 
@@ -144,16 +150,16 @@ def m1():
 	for _ in range(NUM_RUNS):
 		# Measure one full Dask run.
 		t0 = time.perf_counter()
-		result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)
+		result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter, n_chunks=n_chunks)
 		times.append(time.perf_counter() - t0)
 	print("Verification passed: dask output matches serial output.")
-	print(f"Dask local ({NUM_RUNS} runs, n_chunks=32): median {statistics.median(times):.3f} s")
+	print(f"Dask local (N={N}, {NUM_RUNS} runs, n_chunks={n_chunks}): median {statistics.median(times):.3f} s")
 	client.close()
 	# cluster.close()
 
 	"""
 	Verification passed: dask output matches serial output.
-	Dask local (3 runs, n_chunks=32): median 0.046 s
+	Dask local (N=1024, 3 runs, n_chunks=32): median 0.046 s
 	"""
 
 
@@ -168,16 +174,20 @@ def _median_runtime(func, runs=3):
 
 
 def _run_m2_case(use_early_exit):
-	workers = 16
-	n_values = [1024, 2048, 4096, 8192]
+	n_values = [1024, 2048, 4096, 8192, 16384]
 	chunk_multipliers = [1, 2, 4, 8, 16, 32, 64, 128]
 	max_iter = 100
 	x_min, x_max, y_min, y_max = -2.5, 1.0, -1.25, 1.25
 	serial_baseline_chunks = 1
-	mode = "with_early_exit" if use_early_exit else "without_early_exit"
+	mode = "with_early_exit" if use_early_exit else "no_early_exit"
 
-	cluster = LocalCluster(n_workers=workers, threads_per_worker=1)
-	client = Client(cluster)
+	# cluster = LocalCluster(n_workers=16, threads_per_worker=1)
+	# client = Client(cluster)
+	client = Client(REMOTE_CLIENT_STR)
+	print(client)
+	workers = len(client.scheduler_info(-1)["workers"])
+	if workers == 0:
+		raise RuntimeError("Remote Dask cluster has no connected workers.")
 
 	# Compile kernel once per worker before collecting timings (warmup).
 	client.run(
@@ -265,7 +275,7 @@ def _run_m2_case(use_early_exit):
 
 			print(
 				f"\nN={N} (serial T1, 1 chunk median over {NUM_RUNS} runs: {t1_serial:.4f} s; "
-				f"16-worker 1x baseline: {baseline_1x:.4f} s; mode={mode})"
+				f"{workers}-worker 1x baseline: {baseline_1x:.4f} s; mode={mode})"
 			)
 			print("n chunks | time (s) | vs 1x | speedup | LIF")
 			print("-" * 50)
@@ -280,7 +290,7 @@ def _run_m2_case(use_early_exit):
 			)
 
 		fig, axes = plt.subplots(2, 2, figsize=(12, 8), sharex=True)
-		for ax, N in zip(axes.flat, n_values):
+		for ax, N in zip(axes.flat, n_values[1:]):  # on Strato it is more interesting to look at 16k than 1k
 			rows = all_series[N]
 			xs = [r[0] for r in rows]
 			wall_times = [r[1] for r in rows]
@@ -296,7 +306,7 @@ def _run_m2_case(use_early_exit):
 				speedups,
 				marker="s",
 				color="tab:green",
-				label="Speedup (x, vs 16-worker 1x)",
+				label=f"Speedup (x, vs {workers}-worker 1x)",
 			)[0]
 
 			ax.set_xscale("log", base=2)
@@ -314,7 +324,7 @@ def _run_m2_case(use_early_exit):
 
 		fig.suptitle(f"Dask Chunk Sweep ({mode}): Wall Time and Speedup", fontsize=12)
 		plt.tight_layout()
-		plt.savefig(f"dask chunk sweep_{mode}.png", dpi=160)
+		plt.savefig(f"dask_chunk_sweep_strato_{mode}.png", dpi=160)
 
 		print("\nOverall best time:")
 		print(
@@ -326,22 +336,24 @@ def _run_m2_case(use_early_exit):
 			f"n_chunks optimal={overall_best_lif[1]} (N={overall_best_lif[0]}), "
 			f"LIF_min={overall_best_lif[2]:.3f}"
 		)
-		print(f"Saved plot: dask chunk sweep_{mode}.png")
+		print(f"Saved plot: dask_chunk_sweep_strato_{mode}.png")
 	finally:
 		client.close()
-		cluster.close()
+		# cluster.close()
 
 
 def m2():
-	print("\nRunning m2 without early exit...")
-	_run_m2_case(use_early_exit=False)
+	# print("\nRunning m2 without early exit...")
+	# _run_m2_case(use_early_exit=False)
 	print("\nRunning m2 with early exit...")
 	_run_m2_case(use_early_exit=True)
 
 	"""
-	Running m2 without early exit...
+	Local:
 	
-	N=1024 (serial T1, 1 chunk median over 5 runs: 0.0927 s; 16-worker 1x baseline: 0.0395 s; mode=without_early_exit)
+	Running m2 no early exit...
+	
+	N=1024 (serial T1, 1 chunk median over 5 runs: 0.0927 s; 16-worker 1x baseline: 0.0395 s; mode=no_early_exit)
 	n chunks | time (s) | vs 1x | speedup | LIF
 	--------------------------------------------------
 		  16 |   0.0395 |  1.00 |    2.35 |   5.821
@@ -353,7 +365,7 @@ def m2():
 	Optimal for N=1024: n_chunks=16, t_min=0.0395 s;
 	LIF_min=5.821 at n_chunks=16
 	
-	N=2048 (serial T1, 1 chunk median over 5 runs: 0.6345 s; 16-worker 1x baseline: 0.7127 s; mode=without_early_exit)
+	N=2048 (serial T1, 1 chunk median over 5 runs: 0.6345 s; 16-worker 1x baseline: 0.7127 s; mode=no_early_exit)
 	n chunks | time (s) | vs 1x | speedup | LIF
 	--------------------------------------------------
 		  16 |   0.7127 |  1.00 |    0.89 |  16.972
@@ -365,7 +377,7 @@ def m2():
 	Optimal for N=2048: n_chunks=64, t_min=0.0993 s;
 	LIF_min=1.504 at n_chunks=64
 	
-	N=4096 (serial T1, 1 chunk median over 5 runs: 2.6747 s; 16-worker 1x baseline: 3.0432 s; mode=without_early_exit)
+	N=4096 (serial T1, 1 chunk median over 5 runs: 2.6747 s; 16-worker 1x baseline: 3.0432 s; mode=no_early_exit)
 	n chunks | time (s) | vs 1x | speedup | LIF
 	--------------------------------------------------
 		  16 |   3.0432 |  1.00 |    0.88 |  17.205
@@ -377,7 +389,7 @@ def m2():
 	Optimal for N=4096: n_chunks=256, t_min=0.4186 s;
 	LIF_min=1.504 at n_chunks=256
 	
-	N=8192 (serial T1, 1 chunk median over 5 runs: 10.3945 s; 16-worker 1x baseline: 11.9172 s; mode=without_early_exit)
+	N=8192 (serial T1, 1 chunk median over 5 runs: 10.3945 s; 16-worker 1x baseline: 11.9172 s; mode=no_early_exit)
 	n chunks | time (s) | vs 1x | speedup | LIF
 	--------------------------------------------------
 		  16 |  11.9172 |  1.00 |    0.87 |  17.344
@@ -393,7 +405,7 @@ def m2():
 	n_chunks optimal=16 (N=1024), t_min=0.0395 s
 	Overall minimum LIF:
 	n_chunks optimal=64 (N=2048), LIF_min=1.504
-	Saved plot: dask chunk sweep_without_early_exit.png
+	Saved plot: dask_chunk_sweep_local_no_early_exit.png
 	
 	Running m2 with early exit...
 	
@@ -449,34 +461,136 @@ def m2():
 	n_chunks optimal=16 (N=1024), t_min=0.0417 s
 	Overall minimum LIF:
 	n_chunks optimal=512 (N=8192), LIF_min=0.691
-	Saved plot: dask chunk sweep_with_early_exit.png
+	Saved plot: dask_chunk_sweep_local_with_early_exit.png
 	"""
+	###################################################################################################################
 
 
 if __name__ == "__main__":
-	m1()
+	m1(N=4096, n_chunks=128)
 	# m2()
 
 	#######################
 	"""
-	ssh -i ~/.ssh/id_ed25519 ubuntu@10.92.1.245
+	ssh -i ~/.ssh/id_ed25519 ubuntu@10.92.1.104/245/121/42
 	/opt/miniconda3/condabin/conda init
 	( conda activate nsc-2026 )
 	dask worker 10.92.1.177:8786 --nworkers -1 --nthreads 1
 	"""
+	#######################
+	"""
+	Running m2 with early exit...
+	<Client: 'tcp://10.92.1.177:8786' processes=16 threads=16, memory=46.72 GiB>
+	
+	N=1024 (serial T1, 1 chunk median over 5 runs: 0.1417 s; 16-worker 1x baseline: 0.0813 s; mode=with_early_exit)
+	n chunks | time (s) | vs 1x | speedup | LIF
+	--------------------------------------------------
+		  16 |   0.0813 |  1.00 |    1.74 |   8.179
+		  32 |   0.1019 |  0.80 |    1.39 |  10.505
+		  64 |   0.1647 |  0.49 |    0.86 |  17.601
+		 128 |   0.2737 |  0.30 |    0.52 |  29.900
+		 256 |   0.5553 |  0.15 |    0.26 |  61.697
+		 512 |   1.0045 |  0.08 |    0.14 | 112.419
+		1024 |   2.1876 |  0.04 |    0.06 | 246.012
+		2048 |   4.6042 |  0.02 |    0.03 | 518.875
+	Optimal for N=1024: n_chunks=16, t_min=0.0813 s;
+	LIF_min=8.179 at n_chunks=16
+	
+	N=2048 (serial T1, 1 chunk median over 5 runs: 0.6446 s; 16-worker 1x baseline: 0.2597 s; mode=with_early_exit)
+	n chunks | time (s) | vs 1x | speedup | LIF
+	--------------------------------------------------
+		  16 |   0.2597 |  1.00 |    2.48 |   5.445
+		  32 |   0.1961 |  1.32 |    3.29 |   3.866
+		  64 |   0.2162 |  1.20 |    2.98 |   4.366
+		 128 |   0.3211 |  0.81 |    2.01 |   6.970
+		 256 |   0.5861 |  0.44 |    1.10 |  13.547
+		 512 |   1.1190 |  0.23 |    0.58 |  26.773
+		1024 |   2.2592 |  0.11 |    0.29 |  55.073
+		2048 |   4.6779 |  0.06 |    0.14 | 115.106
+	Optimal for N=2048: n_chunks=32, t_min=0.1961 s;
+	LIF_min=3.866 at n_chunks=32
+	
+	N=4096 (serial T1, 1 chunk median over 5 runs: 2.3864 s; 16-worker 1x baseline: 0.6297 s; mode=with_early_exit)
+	n chunks | time (s) | vs 1x | speedup | LIF
+	--------------------------------------------------
+		  16 |   0.6297 |  1.00 |    3.79 |   3.222
+		  32 |   0.5837 |  1.08 |    4.09 |   2.913
+		  64 |   0.7005 |  0.90 |    3.41 |   3.697
+		 128 |   0.4801 |  1.31 |    4.97 |   2.219
+		 256 |   0.7407 |  0.85 |    3.22 |   3.966
+		 512 |   1.2157 |  0.52 |    1.96 |   7.151
+		1024 |   2.4399 |  0.26 |    0.98 |  15.359
+		2048 |   4.8638 |  0.13 |    0.49 |  31.611
+	Optimal for N=4096: n_chunks=128, t_min=0.4801 s;
+	LIF_min=2.219 at n_chunks=128
+	
+	N=8192 (serial T1, 1 chunk median over 5 runs: 8.8606 s; 16-worker 1x baseline: 2.8380 s; mode=with_early_exit)
+	n chunks | time (s) | vs 1x | speedup | LIF
+	--------------------------------------------------
+		  16 |   2.8380 |  1.00 |    3.12 |   4.125
+		  32 |   2.1289 |  1.33 |    4.16 |   2.844
+		  64 |   1.9981 |  1.42 |    4.43 |   2.608
+		 128 |   1.6048 |  1.77 |    5.52 |   1.898
+		 256 |   1.5801 |  1.80 |    5.61 |   1.853
+		 512 |   1.7530 |  1.62 |    5.05 |   2.165
+		1024 |   2.8546 |  0.99 |    3.10 |   4.155
+		2048 |   5.4319 |  0.52 |    1.63 |   8.809
+	Optimal for N=8192: n_chunks=256, t_min=1.5801 s;
+	LIF_min=1.853 at n_chunks=256
+	
+	N=16384 (serial T1, 1 chunk median over 5 runs: 32.6217 s; 16-worker 1x baseline: 10.5030 s; mode=with_early_exit)
+	n chunks | time (s) | vs 1x | speedup | LIF
+	--------------------------------------------------
+		  16 |  10.5030 |  1.00 |    3.11 |   4.151
+		  32 |   9.9972 |  1.05 |    3.26 |   3.903
+		  64 |   9.0471 |  1.16 |    3.61 |   3.437
+		 128 |   6.2439 |  1.68 |    5.22 |   2.062
+		 256 |   5.9519 |  1.76 |    5.48 |   1.919
+		 512 |   5.7058 |  1.84 |    5.72 |   1.799
+		1024 |   5.7816 |  1.82 |    5.64 |   1.836
+		2048 |   7.8862 |  1.33 |    4.14 |   2.868
+	Optimal for N=16384: n_chunks=512, t_min=5.7058 s;
+	LIF_min=1.799 at n_chunks=512
+	
+	Overall best time:
+	n_chunks optimal=16 (N=1024), t_min=0.0813 s
+	Overall minimum LIF:
+	n_chunks optimal=512 (N=16384), LIF_min=1.799
+	Saved plot: dask_chunk_sweep_strato_with_early_exit.png
+	"""
 
 	"""
+	Worker scaling for best chunk size (N=4096: chunks=128;2^3x16) 
+	______________________________________________________________
 	1 instance (4 workers):
+	<Client: 'tcp://10.92.1.177:8786' processes=4 threads=4, memory=11.68 GiB>
 	Verification passed: dask output matches serial output.
-	Dask local (5 runs, n_chunks=32): median 0.095 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.700 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.718 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.732 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.703 s
 
 	2 instances (8 workers):
+	<Client: 'tcp://10.92.1.177:8786' processes=8 threads=8, memory=23.36 GiB>
 	Verification passed: dask output matches serial output.
-	Dask local (5 runs, n_chunks=32): median 0.085 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.621 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.592 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.626 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.650 s
 
 	3 instances (12 workers):
-
+	<Client: 'tcp://10.92.1.177:8786' processes=12 threads=12, memory=35.04 GiB>
+	Verification passed: dask output matches serial output.
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.515 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.538 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.529 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.527 s
 
 	4 instances (16 workers):
-
+	<Client: 'tcp://10.92.1.177:8786' processes=16 threads=16, memory=46.72 GiB>
+	Verification passed: dask output matches serial output.
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.484 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.499 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.490 s
+	- Dask local (N=4096, 5 runs, n_chunks=128): median 0.493 s
 	"""

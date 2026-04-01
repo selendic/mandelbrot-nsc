@@ -14,7 +14,41 @@ def mandelbrot_chunk_early_exit(row_start: int, row_end: int,
 								col_start: int, col_end: int, N: int,
 								x_min: float, x_max: float, y_min: float, y_max: float,
 								threshold=2.0, max_iter=100, use_early_exit=True):
-	"""Compute one square tile and stop early once all points in the tile have diverged."""
+	"""
+	Compute Mandelbrot iteration counts for one tile of the full grid.
+
+	Parameters
+	----------
+	row_start : int
+		Starting row index (inclusive) in the full image.
+	row_end : int
+		Ending row index (exclusive) in the full image.
+	col_start : int
+		Starting column index (inclusive) in the full image.
+	col_end : int
+		Ending column index (exclusive) in the full image.
+	N : int
+		Full image resolution (N x N), used to map indices to complex-plane coordinates.
+	x_min : float
+		Minimum x-coordinate (real axis) of the sampled domain.
+	x_max : float
+		Maximum x-coordinate (real axis) of the sampled domain.
+	y_min : float
+		Minimum y-coordinate (imaginary axis) of the sampled domain.
+	y_max : float
+		Maximum y-coordinate (imaginary axis) of the sampled domain.
+	threshold : float
+		Escape radius threshold (default is 2.0).
+	max_iter : int
+		Maximum number of iterations per point (default is 100).
+	use_early_exit : bool
+		If True, stop iterating once all points in the tile have escaped.
+
+	Returns
+	-------
+	np.ndarray
+		A ``(row_end - row_start, col_end - col_start)`` int32 array of iteration counts.
+	"""
 	height = row_end - row_start
 	width = col_end - col_start
 	result = np.full((height, width), max_iter, dtype=np.int32)
@@ -53,6 +87,34 @@ def mandelbrot_chunk_early_exit(row_start: int, row_end: int,
 # mandelbrot_chunk: your @njit(cache=True) function from L04/L05
 def mandelbrot_dask(N, x_min, x_max, y_min, y_max,
 					max_iter=100, n_chunks=32, use_early_exit=True):
+	"""
+	Compute the Mandelbrot image using Dask-delayed square-tile tasks.
+
+	Parameters
+	----------
+	N : int
+		Square image resolution (N x N).
+	x_min : float
+		Minimum x-coordinate (real axis) of the sampled domain.
+	x_max : float
+		Maximum x-coordinate (real axis) of the sampled domain.
+	y_min : float
+		Minimum y-coordinate (imaginary axis) of the sampled domain.
+	y_max : float
+		Maximum y-coordinate (imaginary axis) of the sampled domain.
+	max_iter : int
+		Maximum number of iterations per point (default is 100).
+	n_chunks : int
+		Target number of tiles. Tiles are arranged as a square grid using
+		``isqrt(n_chunks)`` chunks per axis.
+	use_early_exit : bool
+		If True, tile kernels stop when all points in a tile have escaped.
+
+	Returns
+	-------
+	np.ndarray
+		A ``(N, N)`` int32 array containing Mandelbrot iteration counts.
+	"""
 	# Convert total chunk target to a square tiling layout (chunks per axis).
 	# We can safely assume that n_chunks is a perfect square.
 	chunks_per_axis = max(1, math.isqrt(n_chunks))
@@ -95,7 +157,33 @@ def mandelbrot_dask(N, x_min, x_max, y_min, y_max,
 
 def mandelbrot_serial_blocks(N, x_min, x_max, y_min, y_max,
 							 max_iter=100, n_chunks=32, use_early_exit=True):
-	"""Serial baseline that uses the same square-tile decomposition as the Dask path."""
+	"""
+	Compute a serial Mandelbrot baseline using the same square-tile layout as Dask.
+
+	Parameters
+	----------
+	N : int
+		Square image resolution (N x N).
+	x_min : float
+		Minimum x-coordinate (real axis) of the sampled domain.
+	x_max : float
+		Maximum x-coordinate (real axis) of the sampled domain.
+	y_min : float
+		Minimum y-coordinate (imaginary axis) of the sampled domain.
+	y_max : float
+		Maximum y-coordinate (imaginary axis) of the sampled domain.
+	max_iter : int
+		Maximum number of iterations per point (default is 100).
+	n_chunks : int
+		Target number of tiles used to derive the square tiling layout.
+	use_early_exit : bool
+		If True, tile kernels stop when all points in a tile have escaped.
+
+	Returns
+	-------
+	np.ndarray
+		A ``(N, N)`` int32 array containing Mandelbrot iteration counts.
+	"""
 	# Use the same square tiling strategy as the parallel version.
 	chunks_per_axis = max(1, math.isqrt(n_chunks))
 	# Compute tile edge length for serial tile traversal.
@@ -125,6 +213,22 @@ def mandelbrot_serial_blocks(N, x_min, x_max, y_min, y_max,
 
 
 def m1(N: int = 1024, n_chunks: int = None):
+	"""
+	Run a correctness check and timing benchmark for the Dask Mandelbrot path.
+
+	Parameters
+	----------
+	N : int
+		Square image resolution (N x N) used for verification and timing.
+	n_chunks : int or None
+		Number of chunks to use for Dask execution. If None, defaults to the
+		number of connected cluster workers.
+
+	Returns
+	-------
+	None
+		Prints correctness and timing information to stdout.
+	"""
 	max_iter = 100
 	X_MIN, X_MAX, Y_MIN, Y_MAX = -2.5, 1.0, -1.25, 1.25
 	# cluster = LocalCluster(n_workers=8, threads_per_worker=1)
@@ -164,6 +268,21 @@ def m1(N: int = 1024, n_chunks: int = None):
 
 
 def _median_runtime(func, runs=3):
+	"""
+	Measure and return the median runtime of a callable.
+
+	Parameters
+	----------
+	func : callable
+		Zero-argument function to execute and time.
+	runs : int
+		Number of executions used to compute the median runtime.
+
+	Returns
+	-------
+	float
+		Median elapsed time in seconds across ``runs`` executions.
+	"""
 	times = []
 	for _ in range(runs):
 		# Time a single call and append elapsed seconds.
@@ -174,6 +293,19 @@ def _median_runtime(func, runs=3):
 
 
 def _run_m2_case(use_early_exit):
+	"""
+	Run one milestone-2 chunk-sweep experiment for a selected early-exit mode.
+
+	Parameters
+	----------
+	use_early_exit : bool
+		Whether tile kernels should stop early when all points in a tile escape.
+
+	Returns
+	-------
+	None
+		Prints benchmark tables and saves a chunk-sweep plot image.
+	"""
 	n_values = [1024, 2048, 4096, 8192, 16384]
 	chunk_multipliers = [1, 2, 4, 8, 16, 32, 64, 128]
 	max_iter = 100
@@ -343,6 +475,14 @@ def _run_m2_case(use_early_exit):
 
 
 def m2():
+	"""
+	Entry point for the milestone-2 Dask chunk-sweep experiment.
+
+	Returns
+	-------
+	None
+		Runs the configured experiment mode and prints benchmark results.
+	"""
 	# print("\nRunning m2 without early exit...")
 	# _run_m2_case(use_early_exit=False)
 	print("\nRunning m2 with early exit...")
@@ -467,6 +607,14 @@ def m2():
 
 
 def plot_worker_scaling():
+	"""
+	Plot recorded worker-scaling timing results for a fixed benchmark setup.
+
+	Returns
+	-------
+	None
+		Saves the figure as ``worker_scaling_N=4096.png``.
+	"""
 	data = {
 		4:  [0.700, 0.718, 0.732, 0.703],
 		8:  [0.621, 0.592, 0.626, 0.650],
@@ -515,6 +663,8 @@ if __name__ == "__main__":
 	"""
 	#######################
 	"""
+	Strato:
+	
 	Running m2 with early exit...
 	<Client: 'tcp://10.92.1.177:8786' processes=16 threads=16, memory=46.72 GiB>
 	
@@ -596,7 +746,7 @@ if __name__ == "__main__":
 	"""
 
 	"""
-	Worker scaling for best chunk size (N=4096: chunks=128;2^3x16) 
+	Worker scaling for best chunk size at given resolution (N=4096: chunks=128;2^3x16) 
 	______________________________________________________________
 	1 instance (4 workers):
 	<Client: 'tcp://10.92.1.177:8786' processes=4 threads=4, memory=11.68 GiB>

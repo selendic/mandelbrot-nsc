@@ -118,6 +118,17 @@ def mandelbrot_serial(N: int, x_min: float, x_max: float, y_min: float, y_max: f
 
 
 def serial_sanity_check():
+    """
+    Run a quick timing sanity check for the serial Numba-backed implementation.
+
+    Uses a fixed 1024x1024 grid, performs warmup runs to ensure JIT compilation,
+    then prints median, mean, standard deviation, min, and max timing statistics.
+
+    Returns
+    -------
+    None
+        Prints timing statistics to stdout.
+    """
     N = 1024
     x_min, x_max = -2.0, 1.0
     y_min, y_max = -1.5, 1.5
@@ -217,6 +228,17 @@ def mandelbrot_parallel(pool: Pool, N: int,
 
 
 def parallel_sanity_check():
+    """
+    Compare serial and parallel outputs for multiple resolutions.
+
+    Evaluates fixed resolutions and prints whether the generated Mandelbrot arrays
+    are identical between the serial and parallel implementations.
+
+    Returns
+    -------
+    None
+        Prints pass/fail status for each tested resolution.
+    """
     # Compare the output of the parallel implementation to the serial one for a few resolutions
     Ns = [256, 512, 1024]
     x_min, x_max = -2.0, 1.0
@@ -237,6 +259,17 @@ def parallel_sanity_check():
 
 
 def parallel_timing():
+    """
+    Benchmark the parallel implementation at a fixed problem size.
+
+    Uses a 1024x1024 grid and 4 workers, performs warmup runs, then prints
+    aggregate timing statistics over ``NUM_RUNS`` measured executions.
+
+    Returns
+    -------
+    None
+        Prints timing statistics to stdout.
+    """
     N = 1024
     x_min, x_max = -2.0, 1.0
     y_min, y_max = -1.5, 1.5
@@ -258,6 +291,23 @@ def parallel_timing():
 
 
 def parallel_benchmark_whole(N: int):
+    """
+    Sweep worker counts and plot end-to-end parallel performance metrics.
+
+    For each worker count from 1 to ``cpu_count()``, this function measures the
+    median execution time, computes speedup/efficiency curves, saves a summary
+    plot, and prints a tabular performance report.
+
+    Parameters
+    ----------
+    N : int
+        Square image resolution (N x N) to benchmark.
+
+    Returns
+    -------
+    None
+        Saves a plot image and prints performance summaries.
+    """
     # Sweep from 1 to cpu_count workers, plot results
     x_min, x_max = -2.0, 1.0
     y_min, y_max = -1.5, 1.5
@@ -425,6 +475,23 @@ def parallel_benchmark_whole(N: int):
 
 
 def parallel_benchmark_chunkified(N: int):
+    """
+    Sweep chunk counts at fixed worker count and analyze scheduling effects.
+
+    Uses ``cpu_count()`` workers and tests multiple chunk multipliers relative to
+    the worker count. Reports timing, relative speedup, efficiency, and load
+    imbalance factor (LIF), then saves a multi-panel summary plot.
+
+    Parameters
+    ----------
+    N : int
+        Square image resolution (N x N) to benchmark.
+
+    Returns
+    -------
+    None
+        Saves a plot image and prints chunk-sweep metrics.
+    """
     x_min, x_max = -2.0, 1.0
     y_min, y_max = -1.5, 1.5
     num_workers = cpu_count() # Was actual top speedup in L04

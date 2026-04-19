@@ -210,6 +210,7 @@ dependencies:
   - locket=1.0.0
   - lz4=4.4.5
   - lz4-c=1.10.0
+  - mako=1.3.11
   - markupsafe=3.0.3
   - matplotlib=3.10.8
   - matplotlib-base=3.10.8
@@ -226,6 +227,9 @@ dependencies:
   - nlohmann_json=3.12.0
   - numba=0.63.1
   - numpy=2.3.5
+  - ocl-icd=2.3.3
+  - ocl-icd-system=1.0.0
+  - opencl-headers=2025.06.13
   - openjpeg=2.5.4
   - openldap=2.6.10
   - openssl=3.6.1
@@ -253,6 +257,7 @@ dependencies:
   - pycares=5.0.1
   - pycparser=2.22
   - pygments=2.19.2
+  - pyopencl=2026.1.1
   - pyparsing=3.3.2
   - pyside6=6.10.2
   - pysocks=1.7.1
@@ -265,6 +270,7 @@ dependencies:
   - python-json-logger=2.0.7
   - python-tzdata=2025.3
   - python_abi=3.11
+  - pytools=2026.1
   - pyyaml=6.0.3
   - pyzmq=27.1.0
   - qhull=2020.2
@@ -284,6 +290,7 @@ dependencies:
   - send2trash=2.1.0
   - setuptools=80.10.2
   - simpervisor=1.0.0
+  - siphash24=1.8
   - six=1.17.0
   - snappy=1.2.2
   - snowballstemmer=3.0.1

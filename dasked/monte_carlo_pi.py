@@ -4,6 +4,7 @@ from dask.distributed import LocalCluster, Client
 
 
 def monte_carlo_chunk(n_samples):
+    """Return the number of in-circle hits for a Monte Carlo chunk."""
     inside = 0
     for _ in range(n_samples):
         x, y = random.random(), random.random()
@@ -13,6 +14,7 @@ def monte_carlo_chunk(n_samples):
 
 
 def serial(total, n_chunks, samples):
+    """Run the chunked Monte Carlo baseline serially and report timing."""
     # Serial baseline
     t0 = time.perf_counter()
     results = [monte_carlo_chunk(samples) for _ in range(n_chunks)]
@@ -22,6 +24,7 @@ def serial(total, n_chunks, samples):
 
 
 def dask_delayed(total, n_chunks, samples):
+    """Run the same chunked Monte Carlo workload using Dask delayed tasks."""
     # Dask delayed -- task graph is built, not executed yet
     tasks = [delayed(monte_carlo_chunk)(samples) for _ in range(n_chunks)]
     t0 = time.perf_counter()
@@ -43,6 +46,7 @@ def locally_clustered(
         cluster=None,
         client=None,
 ):
+    """Execute delayed Monte Carlo tasks on a local Dask cluster setup."""
     if cluster is None and n_workers is None:
         raise ValueError("Provide either an existing cluster or n_workers.")
 
@@ -74,6 +78,7 @@ def locally_clustered(
 
 
 def e1():
+    """Run exercise 1: serial vs local Dask-delayed comparisons over chunk counts."""
     total, n_chunks = 1_000_000, 8
     samples = total // n_chunks
 
@@ -122,6 +127,7 @@ def e1():
 
 
 def e2():
+    """Run exercise 2: evaluate speedup across worker and chunk configurations."""
     total, n_chunks = 10_000_000, 8
     samples = total // n_chunks
 

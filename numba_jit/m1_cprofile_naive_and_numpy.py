@@ -3,6 +3,7 @@ import pstats
 
 
 def main():
+    """Run cProfile on naive and NumPy Mandelbrot implementations and print top stats."""
     cProfile.run("""mandelbrot_time_test(
         func_gen=mandelbrot_naive.generate_complex_grid,
         func_calc=mandelbrot_naive.compute_mandelbrot,

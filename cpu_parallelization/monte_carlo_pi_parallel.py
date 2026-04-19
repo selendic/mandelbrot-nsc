@@ -12,6 +12,7 @@ NUM_RUNS = 10
 
 
 def estimate_pi_chunk(num_samples):
+    """Count random samples that fall inside the unit quarter-circle."""
     inside_circle = 0
     for _ in range(num_samples):
         x, y = random.random(), random.random()
@@ -21,6 +22,7 @@ def estimate_pi_chunk(num_samples):
 
 
 def estimate_pi_parallel(total_num_samples, num_processes=4, chunk_size=None):
+    """Estimate pi in parallel by splitting total samples into process chunks."""
     if total_num_samples <= 0:
         raise ValueError("total_num_samples must be > 0")
     if num_processes <= 0:
@@ -48,6 +50,7 @@ def estimate_pi_parallel(total_num_samples, num_processes=4, chunk_size=None):
 
 
 def non_chunked_version():
+    """Benchmark worker scaling when chunk size is derived from worker count."""
     print(f"Num samples: {NUM_SAMPLES}")
     print(f"Num runs:    {NUM_RUNS}\n")
 
@@ -270,6 +273,7 @@ def non_chunked_version():
 
 
 def chunked_version():
+    """Benchmark fixed worker count across multiple explicit chunk sizes."""
     # Print and investigate to find optimal chunk size for my machine
     total_work = 10_000_000
     n_proc = os.cpu_count() // 2

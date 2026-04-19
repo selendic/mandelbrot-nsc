@@ -4,6 +4,7 @@ from pathlib import Path
 
 
 def escape_count(C, max_iter):
+    """Return first escape iteration per point for a grid of complex values."""
     z = np.zeros_like(C)
     cnt = np.full(C.shape, max_iter, dtype=np.int32)
     esc = np.zeros(C.shape, dtype=bool)

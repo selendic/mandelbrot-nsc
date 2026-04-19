@@ -6,10 +6,12 @@ N = 1_000_000
 
 
 def subtract_seven(x):
+    """Return the input value shifted by -7."""
     return x - 7
 
 
 def map_filter_reduce_pipeline_serial(data):
+    """Run the map-filter-reduce pipeline in pure serial mode and time it."""
     t0 = time.perf_counter()
     result_ser = reduce(lambda a, b: a + b,
                         filter(lambda x: x % 2 == 1,
@@ -21,6 +23,7 @@ def map_filter_reduce_pipeline_serial(data):
 
 
 def map_filter_reduce_pipeline_parallel(data):
+    """Run the map stage in a process pool, then filter/reduce and time it."""
     with Pool() as pool:
         t0 = time.perf_counter()
         mapped = pool.map(subtract_seven, data)
@@ -31,6 +34,7 @@ def map_filter_reduce_pipeline_parallel(data):
 
 
 def main():
+    """Generate random input, compare serial vs parallel pipeline, and print speedup."""
     data = [random.randint(10, 100) for _ in range(N)]
     result_ser, t_serial = map_filter_reduce_pipeline_serial(data)
     result_par, t_parallel = map_filter_reduce_pipeline_parallel(data)

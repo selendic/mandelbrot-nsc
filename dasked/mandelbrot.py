@@ -366,6 +366,7 @@ def _run_m2_case(use_early_exit):
 
 			for n_chunks in n_chunks_values:
 				def run_dask_once():
+					"""Execute one Dask Mandelbrot run for the current chunk configuration."""
 					# One Dask execution for this chunk count.
 					return mandelbrot_dask(
 						N,

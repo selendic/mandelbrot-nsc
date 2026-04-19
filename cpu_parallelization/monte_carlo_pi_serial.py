@@ -5,6 +5,7 @@ NUM_RUNS = 10
 
 
 def estimate_pi_serial(num_samples):
+    """Estimate pi via Monte Carlo sampling in the unit square."""
     inside_circle = 0
     for _ in range(num_samples):
         x, y = random.random(), random.random()

@@ -2,6 +2,7 @@ from util import mandelbrot_time_test
 from naive.mandelbrot_naive import generate_complex_grid, compute_mandelbrot
 
 def main():
+    """Run a single-size Mandelbrot timing pass for line-level profiling."""
 
     mandelbrot_time_test(
         func_gen=generate_complex_grid,

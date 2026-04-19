@@ -2,6 +2,7 @@ import numpy as np
 
 
 def find_machine_epsilon(dtype=np.float64):
+    """Return machine epsilon for the given floating-point dtype."""
     eps = dtype(1.0)
     while dtype(1.0) + eps / dtype(2.0) != dtype(1.0):
         eps = eps / dtype(2.0)

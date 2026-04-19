@@ -2,6 +2,7 @@ import numpy as np
 
 
 def quadratic_naive(a, b, c):
+    """Compute quadratic roots directly using the standard formula."""
     t = type(a)
     # np.float32 or np.float64
     disc = t(np.sqrt(b * b - t(4) * a * c))  # b*b not b**2; t() casts literals and sqrt
@@ -14,6 +15,7 @@ def quadratic_naive(a, b, c):
 # roots: x1 ~ 10000, x2 ~ 1e-4
 
 def run_naive():
+    """Print naive-root results for float32 and float64 precision."""
     for dtype in [np.float32, np.float64]:
         a, b, c = dtype(1.0), dtype(-10000.0001), dtype(1.0)
         x1, x2 = quadratic_naive(a, b, c)
@@ -26,6 +28,7 @@ def run_naive():
 
 
 def quadratic_stable(a, b, c):
+    """Compute quadratic roots using a cancellation-avoiding stable formulation."""
     t = type(a)
     disc = t(np.sqrt(b * b - t(4) * a * c))
     if b > 0:
@@ -37,6 +40,7 @@ def quadratic_stable(a, b, c):
 
 
 def run_both():
+    """Compare relative error of naive and stable quadratic solvers."""
     true_small = 1.0 / 10000.0001  # ~ 1e-4
     for dtype in [np.float32, np.float64]:
         a, b, c = dtype(1.0), dtype(-10000.0001), dtype(1.0)

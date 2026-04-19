@@ -3,6 +3,7 @@ import time
 
 
 def measure_row_vs_column_major_access(A):
+    """Measure row-wise and column-wise traversal time for a square 2D array."""
     assert A.ndim == 2
     assert A.shape[0] == A.shape[1]
     N = A.shape[0]
@@ -19,6 +20,7 @@ def measure_row_vs_column_major_access(A):
 
 
 def main():
+    """Compare access patterns for C-order and Fortran-order arrays."""
     N = 10000
     A = np.random.rand(N, N)
 

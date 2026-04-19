@@ -7,6 +7,7 @@ from util import mandelbrot_time_test
 
 
 def main(show_plots: bool = False):
+    """Benchmark full-Numba Mandelbrot with different complex precisions."""
     print("Testing 1024x1024 res full numba")
     results = []
     for dtype_c, dtype_out in product([np.complex64, np.complex128], [np.int32]):

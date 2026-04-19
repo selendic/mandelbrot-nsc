@@ -5,6 +5,7 @@ import dask, distributed
 
 
 def print_all_versions():
+    """Print installed versions of core dependencies used in this project."""
     print(f"NumPy version: {np.__version__}")
     print(f"Matplotlib version: {matplotlib.__version__}")
     print(f"Numba version: {nb.__version__}")
@@ -13,6 +14,7 @@ def print_all_versions():
 
 
 def dask_sanity_check():
+    """Run a tiny Dask computation to verify local scheduler setup works."""
     from dask.distributed import LocalCluster, Client
     cluster = LocalCluster(n_workers=2, threads_per_worker=1)
     client = Client(cluster)

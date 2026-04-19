@@ -187,7 +187,30 @@ def main(
         runs_per_size: int = 10,
         warmup_runs: int = 2
 ):
-    """Benchmark naive, NumPy, and Numba Mandelbrot implementations across sizes."""
+    """
+    Benchmark naive, NumPy, and Numba Mandelbrot implementations across sizes.
+
+    Parameters
+    ----------
+    image_size_start_log_2 : int
+        Starting power-of-two exponent for image size sweep.
+    image_size_top_log_2 : int
+        Final power-of-two exponent for image size sweep (inclusive).
+    dtype_c : type
+        Complex dtype used for grid generation (e.g., np.complex64 or np.complex128).
+    dtype_out : type
+        Output dtype used for Mandelbrot iteration counts.
+    runs_per_size : int
+        Number of benchmark runs for each image size.
+    warmup_runs : int
+        Number of warmup runs used before timing JIT-compiled implementations.
+
+    Returns
+    -------
+    None
+        Prints timing and speedup statistics and displays benchmark plots.
+    """
+
     results_naive, medians_naive, means_naive, stddevs_naive, image_sizes = mandelbrot_time_test(
         func_gen=mandelbrot_naive.generate_complex_grid,
         func_calc=mandelbrot_naive.compute_mandelbrot,
@@ -255,7 +278,7 @@ def main(
             results_numba_full[i], results_naive[i]) and np.allclose(results_numba_full_parallel[i], results_naive[i])
         print(f"Results are close enough: {all_close}")
 
-        print(f"Mandelbrot set generation times (avg ± std) [median speedup]:")
+        print("Mandelbrot set generation times (avg ± std) [median speedup]:")
         print(f"  - Naive:               {means_naive[i]:.4f} ± {stddevs_naive[i]:.4f}s  [1.00x]")
         print(
             f"  - Numpy:               {means_numpy[i]:.4f} ± {stddevs_numpy[i]:.4f}s  [{medians_naive[i] / medians_numpy[i]:.2f}x]")
@@ -335,3 +358,27 @@ def main(
 
 if __name__ == "__main__":
     main()
+
+"""
+Ruff first run:
+
+F541 [*] f-string without any placeholders
+   --> numba_jit/mandelbrot_numba_jit.py:281:15
+    |
+279 |         print(f"Results are close enough: {all_close}")
+280 |
+281 |         print(f"Mandelbrot set generation times (avg ± std) [median speedup]:")
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+282 |         print(f"  - Naive:               {means_naive[i]:.4f} ± {stddevs_naive[i]:.4f}s  [1.00x]")
+283 |         print(
+    |
+help: Remove extraneous `f` prefix
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+
+--------------------------------------------------------------------------------------------------------
+Ruff second run:
+
+All checks passed!
+"""

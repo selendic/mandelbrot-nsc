@@ -278,6 +278,7 @@ dependencies:
   - rfc3987-syntax=1.1.0
   - roman-numerals=4.1.0
   - rpds-py=0.30.0
+  - ruff=0.15.11
   - s2n=1.6.2
   - scipy=1.17.0
   - send2trash=2.1.0

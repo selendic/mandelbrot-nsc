@@ -12,7 +12,7 @@ WARMUP_RUNS = 3
 
 
 @njit(cache=True)
-def mandelbrot_point(c: complex, t: float, max_iter=100):
+def mandelbrot_point(c: complex, t: float = 4.0, max_iter=100):
     """
     Calculates the number of iterations for a point c to escape the Mandelbrot set (numba-njit optimized).
 
@@ -21,7 +21,7 @@ def mandelbrot_point(c: complex, t: float, max_iter=100):
     c : complex
         Complex point to evaluate
     t : float
-        Escape threshold squared (to avoid computing square root)
+        Escape threshold squared (to avoid computing square root; default is 4.0 which corresponds to a threshold of 2)
     max_iter : int
         Maximum number of iterations (default is 100)
 

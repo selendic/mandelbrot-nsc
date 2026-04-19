@@ -17,7 +17,7 @@ matplotlib.use('TkAgg')
 
 
 @profile
-def mandelbrot_point(c, max_iter=100):
+def mandelbrot_point(c, t=2, max_iter=100):
     """
     Calculates the number of iterations for a point c to escape the Mandelbrot set.
 
@@ -25,6 +25,8 @@ def mandelbrot_point(c, max_iter=100):
     ----------
     c : complex
         Complex point to evaluate
+    t : float
+        Escape threshold (default is 2)
     max_iter : int
         Maximum number of iterations (default is 100)
 
@@ -37,13 +39,13 @@ def mandelbrot_point(c, max_iter=100):
     z_n = z_0
     for n in range(max_iter):
         z_n = z_n ** 2 + c
-        if abs(z_n) > 2:
+        if abs(z_n) > t:
             return n
     return max_iter
 
 
 @profile
-def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100, dtype=np.int32) -> np.ndarray:
+def compute_mandelbrot(C: np.ndarray, threshold=2, max_iter=100, dtype=np.int32) -> np.ndarray:
     """
     Generates the Mandelbrot set (naively).
 
@@ -53,7 +55,7 @@ def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100, dtype=np.
         Array of complex numbers representing the points to evaluate
     threshold : float
         Escape threshold (default is 2)
-    max_iterations : int
+    max_iter : int
         Maximum number of iterations (default is 100)
     dtype : type
         Data type for the output array (default is np.int32)
@@ -67,13 +69,13 @@ def compute_mandelbrot(C: np.ndarray, threshold=2, max_iterations=100, dtype=np.
     mandelbrot_set = np.zeros(C.shape, dtype=dtype)
     for i in range(C.shape[0]):
         for j in range(C.shape[1]):
-            mandelbrot_set[i, j] = mandelbrot_point(C[i, j], max_iterations)
+            mandelbrot_set[i, j] = mandelbrot_point(C[i, j], t=threshold, max_iter=max_iter)
 
     return mandelbrot_set
 
 
 @profile
-def generate_complex_grid(image_size: int, dtype: int = np.complex128) -> np.ndarray:
+def generate_complex_grid(image_size: int, dtype: type = np.complex128) -> np.ndarray:
     """
     Generate the complex grid for the Mandelbrot set.
 

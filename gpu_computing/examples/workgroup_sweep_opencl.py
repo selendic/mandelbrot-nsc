@@ -28,7 +28,7 @@ import pyopencl as cl
 import matplotlib.pyplot as plt
 
 
-N         = 1024      # image resolution
+N         = 4096      # image resolution
 MAX_ITER  = 200
 RUNS      = 5         # median of this many timings per local size
 
@@ -161,3 +161,27 @@ if __name__ == "__main__":
     print(f"\nSaved: {out}")
     print(f"Fastest: {min(results, key=lambda r: r[1])[0]}  "
           f"({min(times_ms):.1f} ms)")
+
+
+"""
+Device:              NVIDIA GeForce RTX 5050 Laptop GPU
+Max work-group size: 1024
+Compute units:       20
+Image N:             4096  max_iter: 200  runs: 5
+
+  local_size   median (ms)     rel
+----------------------------------------
+        auto          1.26
+         4x4          3.20
+         8x8          1.25
+       16x16          1.22
+       32x32          2.00
+        64x4          1.25
+        4x64          1.22
+       128x2          1.28
+       256x1          1.27
+       1x256          1.50
+
+Saved: /home/peppermint/Aalborg/CE8/numerical_scientific_computing/mandelbrot-nsc/gpu_computing/examples/workgroup_sweep.png
+Fastest: 4x64  (1.2 ms)
+"""

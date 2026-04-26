@@ -1,5 +1,5 @@
 # Find out about your computer's OpenCL situation
-# FRom: https://github.com/benshope/PyOpenCL-Tutorial
+# From: https://github.com/benshope/PyOpenCL-Tutorial
 
 # Import the OpenCL GPU computing API
 import pyopencl as cl
@@ -25,3 +25,23 @@ for platform in cl.get_platforms():
         print('    Device - Max Buffer/Image Size: {0:.0f} MB'.format(device.max_mem_alloc_size/1048576.0))
         print('    Device - Max Work Group Size: {0:.0f}'.format(device.max_work_group_size))
 print('\n')
+
+"""
+============================================================
+OpenCL Platforms and Devices
+============================================================
+Platform - Name:  NVIDIA CUDA
+Platform - Vendor:  NVIDIA Corporation
+Platform - Version:  OpenCL 3.0 CUDA 13.1.112
+Platform - Profile:  FULL_PROFILE
+    --------------------------------------------------------
+    Device - Name:  NVIDIA GeForce RTX 5050 Laptop GPU
+    Device - Type:  ALL | GPU
+    Device - Max Clock Speed:  2212 Mhz
+    Device - Compute Units:  20
+    Device - Local Memory:  48 KB
+    Device - Constant Memory:  64 KB
+    Device - Global Memory: 8 GB
+    Device - Max Buffer/Image Size: 1925 MB
+    Device - Max Work Group Size: 1024
+"""

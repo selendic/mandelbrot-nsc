@@ -22,7 +22,7 @@ import pyopencl as cl
 # ---------------------------------------------------------------------------
 # 1. Create context and command queue
 # ---------------------------------------------------------------------------
-ctx   = cl.create_some_context(interactive=False)   # picks first available
+ctx = cl.create_some_context(interactive=False)  # picks first available
 queue = cl.CommandQueue(ctx)
 
 dev = ctx.devices[0]
@@ -48,10 +48,10 @@ prog = cl.Program(ctx, kernel_source).build()
 # 3. Allocate host and device buffers
 # ---------------------------------------------------------------------------
 a_host = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
-result  = np.empty_like(a_host)
+result = np.empty_like(a_host)
 
-mf      = cl.mem_flags
-a_dev   = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a_host)
+mf = cl.mem_flags
+a_dev = cl.Buffer(ctx, mf.READ_WRITE | mf.COPY_HOST_PTR, hostbuf=a_host)
 
 # ---------------------------------------------------------------------------
 # 4. Launch kernel
@@ -64,7 +64,7 @@ prog.square(queue, a_host.shape, None, a_dev)
 cl.enqueue_copy(queue, result, a_dev)
 queue.finish()
 
-print("Kernel output:", result)   # Expected: [1. 4. 9. 16.]
+print("Kernel output:", result)  # Expected: [1. 4. 9. 16.]
 
 # ---------------------------------------------------------------------------
 # 6. Verify
@@ -76,3 +76,13 @@ print("All elements close?", ok)
 if not ok:
     print("MISMATCH! Expected:", expected, "  Got:", result)
     raise SystemExit(1)
+
+"""
+Device: NVIDIA GeForce RTX 5050 Laptop GPU
+  Vendor:  NVIDIA Corporation
+  OpenCL:  OpenCL 3.0 CUDA
+  Compute units: 20
+
+Kernel output: [ 1.  4.  9. 16.]
+All elements close? True
+"""

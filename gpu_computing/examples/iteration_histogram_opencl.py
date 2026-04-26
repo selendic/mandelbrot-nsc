@@ -167,3 +167,13 @@ if __name__ == "__main__":
     plt.savefig(out_img, dpi=150, bbox_inches='tight')
     plt.close()
     print(f"Saved: {out_img}")
+
+
+"""
+Device: NVIDIA GeForce RTX 5050 Laptop GPU
+Image:      1024x1024  max_iter: 200
+Elapsed:    0.8 ms
+Histogram:  sum = 1,048,576  (matches 1048576 pixels)
+Saturated:  183,036 pixels hit max_iter (17.5%)
+Mean iter:  39.0
+"""

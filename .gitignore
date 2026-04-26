@@ -5,3 +5,5 @@ src/*
 git_log.txt
 *.zip
 *.pdf
+
+docs/*

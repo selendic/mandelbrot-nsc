@@ -234,19 +234,19 @@ Running benchmarks for N=1024
 ========================================
 Benchmark setup: N=1024, max_iter=200, warmup=1, runs=5
 
-CPU float32  mean+-std:   82.578 +-   0.605 ms
-GPU float32  mean+-std:    1.111 +-   0.321 ms
-CPU float64  mean+-std:   82.276 +-   0.025 ms
-GPU float64  mean+-std:    4.986 +-   0.282 ms
+CPU float32  mean+-std:   15.357 +-   0.131 ms
+GPU float32  mean+-std:    1.029 +-   0.282 ms
+CPU float64  mean+-std:   21.356 +-   4.739 ms
+GPU float64  mean+-std:    4.981 +-   0.245 ms
 
 Median runtime table
 Precision  | CPU median (ms) | GPU median (ms)
 ----------------------------------------------
-float32    |          82.268 |           0.975
-float64    |          82.276 |           4.862
+float32    |          15.354 |           0.883
+float64    |          24.882 |           4.974
 
 Equality checks (CPU vs GPU)
-float32 assert (array_equal): False  mismatches: 1123 (=0.11%)
+float32 assert (array_equal): False  mismatches: 1651 (=0.16%)
 float64 assert (array_equal): True  mismatches: 0 (=0.00%)
 
 ========================================
@@ -254,39 +254,39 @@ Running benchmarks for N=2048
 ========================================
 Benchmark setup: N=2048, max_iter=200, warmup=1, runs=5
 
-CPU float32  mean+-std:  329.228 +-   2.096 ms
-GPU float32  mean+-std:    5.339 +-   0.929 ms
-CPU float64  mean+-std:  329.442 +-   2.160 ms
-GPU float64  mean+-std:   20.596 +-   1.131 ms
+CPU float32  mean+-std:   63.229 +-   1.236 ms
+GPU float32  mean+-std:   10.227 +-  10.378 ms
+CPU float64  mean+-std:   65.344 +-   2.940 ms
+GPU float64  mean+-std:   23.043 +-   2.976 ms
 
 Median runtime table
 Precision  | CPU median (ms) | GPU median (ms)
 ----------------------------------------------
-float32    |         328.197 |           4.950
-float64    |         328.354 |          20.018
+float32    |          62.452 |           5.109
+float64    |          64.100 |          22.462
 
 Equality checks (CPU vs GPU)
-float32 assert (array_equal): False  mismatches: 4290 (=0.10%)
-float64 assert (array_equal): False  mismatches: 2 (=0.00%)
+float32 assert (array_equal): False  mismatches: 6419 (=0.15%)
+float64 assert (array_equal): False  mismatches: 1 (=0.00%)
 
 ========================================
 Running benchmarks for N=4096
 ========================================
 Benchmark setup: N=4096, max_iter=200, warmup=1, runs=5
 
-CPU float32  mean+-std: 1339.136 +-   7.844 ms
-GPU float32  mean+-std:   16.304 +-   0.412 ms
-CPU float64  mean+-std: 1336.156 +-   1.874 ms
-GPU float64  mean+-std:   74.248 +-   0.730 ms
+CPU float32  mean+-std:  256.793 +-   2.046 ms
+GPU float32  mean+-std:   63.348 +-   6.829 ms
+CPU float64  mean+-std:  257.387 +-   2.967 ms
+GPU float64  mean+-std:  126.355 +-  14.058 ms
 
 Median runtime table
 Precision  | CPU median (ms) | GPU median (ms)
 ----------------------------------------------
-float32    |        1336.070 |          16.298
-float64    |        1336.046 |          74.160
+float32    |         257.873 |          59.689
+float64    |         257.863 |         125.014
 
 Equality checks (CPU vs GPU)
-float32 assert (array_equal): False  mismatches: 35375 (=0.21%)
+float32 assert (array_equal): False  mismatches: 34542 (=0.21%)
 float64 assert (array_equal): False  mismatches: 2 (=0.00%)
 
 ========================================
@@ -294,18 +294,18 @@ Running benchmarks for N=8192
 ========================================
 Benchmark setup: N=8192, max_iter=200, warmup=1, runs=5
 
-CPU float32  mean+-std: 5341.589 +-  15.763 ms
-GPU float32  mean+-std:   62.371 +-   0.303 ms
-CPU float64  mean+-std: 5337.793 +-   3.794 ms
-GPU float64  mean+-std:  289.376 +-   0.671 ms
+CPU float32  mean+-std: 1038.251 +-   8.075 ms
+GPU float32  mean+-std:  293.612 +-  49.876 ms
+CPU float64  mean+-std: 1038.564 +-   7.984 ms
+GPU float64  mean+-std:  452.706 +- 134.338 ms
 
 Median runtime table
 Precision  | CPU median (ms) | GPU median (ms)
 ----------------------------------------------
-float32    |        5346.941 |          62.442
-float64    |        5338.171 |         289.692
+float32    |        1036.623 |         319.006
+float64    |        1040.851 |         358.936
 
 Equality checks (CPU vs GPU)
-float32 assert (array_equal): False  mismatches: 96812 (=0.14%)
-float64 assert (array_equal): False  mismatches: 15 (=0.00%)
+float32 assert (array_equal): False  mismatches: 105640 (=0.16%)
+float64 assert (array_equal): False  mismatches: 7 (=0.00%)
 """
